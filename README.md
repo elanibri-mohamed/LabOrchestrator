@@ -84,11 +84,10 @@ Users (Students / Administrators)
 
 ## Database
 
-* PostgreSQL or MySQL
+* PostgreSQL
 
 ## Infrastructure
 
-* Proxmox VE
 * EVE-NG
 
 ## Automation
