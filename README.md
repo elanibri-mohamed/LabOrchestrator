@@ -88,6 +88,7 @@ Users (Students / Administrators)
 
 ## Infrastructure
 
+* Proxmox VE
 * EVE-NG
 
 ## Automation
@@ -302,6 +303,7 @@ lab-orchestrator
 
 The system runs on a server infrastructure based on:
 
+* Proxmox virtualization
 * EVE-NG network emulator
 * Backend API server
 * Web frontend
