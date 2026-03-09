@@ -305,8 +305,10 @@ The system runs on a server infrastructure based on:
 
 * Proxmox virtualization
 * EVE-NG network emulator
-* Backend API server
-* Web frontend
+* Ubuntu server
+  - Backend API container
+  - Web frontend container
+  - Database container
 
 Multiple virtual labs run simultaneously on the same infrastructure.
 
