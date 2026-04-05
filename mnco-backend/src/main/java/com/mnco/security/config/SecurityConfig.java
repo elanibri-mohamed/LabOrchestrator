@@ -51,6 +51,8 @@ public class SecurityConfig {
                         "/auth/register", "/auth/login", "/auth/refresh").permitAll()
                 // Public actuator
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                // API contract — accessible without auth
+                .requestMatchers("/api-docs/**").permitAll()
                 // Admin-only
                 .requestMatchers("/admin/**", "/audit/**").hasRole("ADMIN")
                 // Everything else requires authentication
@@ -58,7 +60,6 @@ public class SecurityConfig {
             )
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())
-            // Logging filter runs first, then JWT auth
             .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
