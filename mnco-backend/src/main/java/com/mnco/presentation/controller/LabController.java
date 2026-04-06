@@ -5,150 +5,106 @@ import com.mnco.application.dto.request.CreateLabRequest;
 import com.mnco.application.dto.response.ApiResponse;
 import com.mnco.application.dto.response.LabResponse;
 import com.mnco.application.usecases.LabUseCase;
-import com.mnco.domain.repository.UserRepository;
-import com.mnco.exception.custom.ResourceNotFoundException;
 import com.mnco.infrastructure.external.eveng.EveNgNodeConsoleInfo;
+import com.mnco.security.service.UserDetailsServiceImpl.MncoUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
-/**
- * REST controller for lab lifecycle management.
- *
- * Endpoints:
- *   GET    /labs                          — list user's labs
- *   POST   /labs                          — create lab
- *   GET    /labs/{id}                     — get lab
- *   POST   /labs/{id}/start               — start lab
- *   POST   /labs/{id}/stop                — stop lab
- *   POST   /labs/{id}/clone               — clone lab (FR-LM-06)
- *   DELETE /labs/{id}                     — delete lab
- *   GET    /labs/{id}/nodes/{nodeId}/console — get console URL (FR-LM-09)
- *   GET    /labs/admin/all                — admin: all labs
- */
 @Slf4j
 @RestController
-@RequestMapping("/labs")
+@RequestMapping(value = "/api/v1/labs", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class LabController {
 
     private final LabUseCase labUseCase;
-    private final UserRepository userRepository;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<LabResponse>>> listLabs(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        boolean isAdmin = isAdmin(userDetails);
-        List<LabResponse> labs = isAdmin
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        List<LabResponse> labs = principal.isAdmin()
                 ? labUseCase.getAllLabs()
-                : labUseCase.getLabsByOwner(resolveUserId(userDetails.getUsername()));
+                : labUseCase.getLabsByOwner(principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success(labs));
     }
 
     @PostMapping
     public ResponseEntity<ApiResponse<LabResponse>> createLab(
             @Valid @RequestBody CreateLabRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        UUID ownerId = resolveUserId(userDetails.getUsername());
-        log.info("POST /labs — user={}, name='{}'", ownerId, request.name());
-        LabResponse lab = labUseCase.createLab(request, ownerId);
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        log.info("POST /api/v1/labs — user={}", principal.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Lab created successfully", lab));
+                .body(ApiResponse.success("Lab created successfully",
+                        labUseCase.createLab(request, principal.getUserId())));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<LabResponse>> getLab(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        UUID requesterId = resolveUserId(userDetails.getUsername());
-        LabResponse lab = labUseCase.getLabById(id, requesterId, isAdmin(userDetails));
-        return ResponseEntity.ok(ApiResponse.success(lab));
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        return ResponseEntity.ok(ApiResponse.success(
+                labUseCase.getLabById(id, principal.getUserId(), principal.isAdmin())));
     }
 
     @PostMapping("/{id}/start")
     public ResponseEntity<ApiResponse<LabResponse>> startLab(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        UUID requesterId = resolveUserId(userDetails.getUsername());
-        log.info("POST /labs/{}/start — user={}", id, requesterId);
-        return ResponseEntity.ok(ApiResponse.success("Lab started", labUseCase.startLab(id, requesterId)));
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        log.info("POST /api/v1/labs/{}/start — user={}", id, principal.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("Lab started",
+                labUseCase.startLab(id, principal.getUserId())));
     }
 
     @PostMapping("/{id}/stop")
     public ResponseEntity<ApiResponse<LabResponse>> stopLab(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        UUID requesterId = resolveUserId(userDetails.getUsername());
-        log.info("POST /labs/{}/stop — user={}", id, requesterId);
-        return ResponseEntity.ok(ApiResponse.success("Lab stopped", labUseCase.stopLab(id, requesterId)));
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        log.info("POST /api/v1/labs/{}/stop — user={}", id, principal.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("Lab stopped",
+                labUseCase.stopLab(id, principal.getUserId())));
     }
 
-    /**
-     * Clone a STOPPED lab into a new independent lab (FR-LM-06).
-     * Source must be STOPPED; clone inherits same resource profile.
-     */
     @PostMapping("/{id}/clone")
     public ResponseEntity<ApiResponse<LabResponse>> cloneLab(
             @PathVariable UUID id,
             @Valid @RequestBody CloneLabRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        UUID requesterId = resolveUserId(userDetails.getUsername());
-        log.info("POST /labs/{}/clone — user={}, cloneName='{}'", id, requesterId, request.name());
-        LabResponse clone = labUseCase.cloneLab(id, request, requesterId);
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        log.info("POST /api/v1/labs/{}/clone — user={}", id, principal.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Lab cloned successfully", clone));
+                .body(ApiResponse.success("Lab cloned successfully",
+                        labUseCase.cloneLab(id, request, principal.getUserId())));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteLab(
+    public ResponseEntity<Void> deleteLab(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        UUID requesterId = resolveUserId(userDetails.getUsername());
-        log.info("DELETE /labs/{} — user={}", id, requesterId);
-        labUseCase.deleteLab(id, requesterId);
-        return ResponseEntity.ok(ApiResponse.success("Lab deleted successfully", null));
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        log.info("DELETE /api/v1/labs/{} — user={}", id, principal.getUserId());
+        labUseCase.deleteLab(id, principal.getUserId());
+        return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Get console connection details for a specific node (FR-LM-09).
-     * Lab must be RUNNING; returns protocol, host, port, and WebSocket URL.
-     */
     @GetMapping("/{id}/nodes/{nodeId}/console")
     public ResponseEntity<ApiResponse<EveNgNodeConsoleInfo>> getNodeConsole(
             @PathVariable UUID id,
             @PathVariable String nodeId,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        UUID requesterId = resolveUserId(userDetails.getUsername());
-        log.debug("GET /labs/{}/nodes/{}/console — user={}", id, nodeId, requesterId);
-        EveNgNodeConsoleInfo consoleInfo = labUseCase.getNodeConsoleInfo(id, nodeId, requesterId);
-        return ResponseEntity.ok(ApiResponse.success(consoleInfo));
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        return ResponseEntity.ok(ApiResponse.success(
+                labUseCase.getNodeConsoleInfo(id, nodeId, principal.getUserId())));
     }
 
     @GetMapping("/admin/all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<LabResponse>>> getAllLabsAdmin() {
         return ResponseEntity.ok(ApiResponse.success(labUseCase.getAllLabs()));
-    }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    private UUID resolveUserId(String username) {
-        return userRepository.findByUsername(username)
-                .map(u -> u.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
-    }
-
-    private boolean isAdmin(UserDetails userDetails) {
-        return userDetails.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
 }
