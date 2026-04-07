@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-07T13:20:15+0100",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260224-0835, environment: Java 25.0.2 (Oracle Corporation)"
+    date = "2026-04-08T00:31:48+0100",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.2 (Amazon.com Inc.)"
 )
 @Component
 public class LabMapperImpl implements LabMapper {
@@ -92,21 +92,21 @@ public class LabMapperImpl implements LabMapper {
 
         LabJpaEntity.LabJpaEntityBuilder labJpaEntity = LabJpaEntity.builder();
 
-        labJpaEntity.cpuAllocated( lab.getCpuAllocated() );
-        labJpaEntity.createdAt( lab.getCreatedAt() );
+        labJpaEntity.id( lab.getId() );
+        labJpaEntity.name( lab.getName() );
         labJpaEntity.description( lab.getDescription() );
+        labJpaEntity.status( lab.getStatus() );
+        labJpaEntity.ownerId( lab.getOwnerId() );
+        labJpaEntity.templateId( lab.getTemplateId() );
         labJpaEntity.evengLabId( lab.getEvengLabId() );
         labJpaEntity.evengNodeId( lab.getEvengNodeId() );
-        labJpaEntity.id( lab.getId() );
-        labJpaEntity.lastActiveAt( lab.getLastActiveAt() );
-        labJpaEntity.name( lab.getName() );
-        labJpaEntity.ownerId( lab.getOwnerId() );
+        labJpaEntity.cpuAllocated( lab.getCpuAllocated() );
         labJpaEntity.ramAllocated( lab.getRamAllocated() );
-        labJpaEntity.startedAt( lab.getStartedAt() );
-        labJpaEntity.status( lab.getStatus() );
-        labJpaEntity.stoppedAt( lab.getStoppedAt() );
         labJpaEntity.storageAllocated( lab.getStorageAllocated() );
-        labJpaEntity.templateId( lab.getTemplateId() );
+        labJpaEntity.startedAt( lab.getStartedAt() );
+        labJpaEntity.stoppedAt( lab.getStoppedAt() );
+        labJpaEntity.lastActiveAt( lab.getLastActiveAt() );
+        labJpaEntity.createdAt( lab.getCreatedAt() );
         labJpaEntity.updatedAt( lab.getUpdatedAt() );
 
         return labJpaEntity.build();
