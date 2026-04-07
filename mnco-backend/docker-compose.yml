@@ -43,7 +43,7 @@ services:
       DB_PASSWORD: mnco_pass
       JWT_SECRET: change-this-in-production-use-a-256bit-random-secret-key!!
       JWT_EXPIRATION_MS: 86400000
-      EVENG_BASE_URL: http://192.168.1.100
+      EVENG_BASE_URL: http://192.168.100.10
       EVENG_USERNAME: admin
       EVENG_PASSWORD: eve
       EVENG_SIMULATION: "true"   # Set to false when EVE-NG VM is available
