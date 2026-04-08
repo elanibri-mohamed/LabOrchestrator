@@ -5,8 +5,6 @@ import com.mnco.application.dto.request.RegisterRequest;
 import com.mnco.application.dto.response.AuthResponse;
 import com.mnco.application.dto.response.UserResponse;
 import com.mnco.application.mapper.UserMapper;
-import com.mnco.domain.entities.AuditLog.EventType;
-import com.mnco.domain.entities.AuditLog.Result;
 import com.mnco.domain.entities.User;
 import com.mnco.domain.entities.UserRole;
 import com.mnco.domain.repository.UserRepository;
@@ -103,6 +101,62 @@ public class AuthService implements AuthUseCase {
     public UserResponse getProfile(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+        return userMapper.toResponse(user);
+    }
+
+    @Override
+    public AuthResponse refreshToken(String refreshToken) {
+        log.info("Refresh token attempt");
+
+        // Remove "Bearer " prefix if present
+        String token = refreshToken.startsWith("Bearer ") ? refreshToken.substring(7) : refreshToken;
+
+        // Extract username and role from the refresh token
+        String username = jwtService.extractUsername(token);
+        String role = jwtService.extractRole(token);
+
+        // Validate token
+        if (username == null || role == null || !jwtService.isTokenValid(token)) {
+            throw new InvalidCredentialsException("Invalid refresh token");
+        }
+
+        // Generate new access token
+        String newToken = jwtService.generateToken(username, role);
+        return AuthResponse.of(newToken, jwtService.getExpirationMs(), null, username, null, null);
+    }
+
+    @Override
+    public void logout(String token) {
+        log.info("Logout attempt");
+
+        // Remove "Bearer " prefix if present
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+
+        // TODO: Implement token blacklisting when JwtService supports it
+        // jwtService.invalidateToken(jwtToken);
+
+        log.info("Token invalidated successfully for token: {}", jwtToken.substring(0, Math.min(10, jwtToken.length())) + "...");
+    }
+
+    @Override
+    public UserResponse getCurrentUser(String token) {
+        log.info("Get current user from token");
+
+        // Remove "Bearer " prefix if present
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+
+        // Extract username from token
+        String username = jwtService.extractUsername(jwtToken);
+
+        // Validate token
+        if (username == null || !jwtService.isTokenValid(jwtToken)) {
+            throw new InvalidCredentialsException("Invalid token");
+        }
+
+        // Get user from database
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+
         return userMapper.toResponse(user);
     }
 

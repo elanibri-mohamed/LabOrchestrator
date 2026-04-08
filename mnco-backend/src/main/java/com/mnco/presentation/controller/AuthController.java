@@ -3,8 +3,8 @@ package com.mnco.presentation.controller;
 import com.mnco.application.dto.request.LoginRequest;
 import com.mnco.application.dto.request.RegisterRequest;
 import com.mnco.application.dto.response.AuthResponse;
+import com.mnco.application.dto.response.UserResponse;
 import com.mnco.application.usecases.AuthUseCase;
-import com.mnco.application.dto.response.UserDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,10 +54,10 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getCurrentUser(
+    public ResponseEntity<UserResponse> getCurrentUser(
             @RequestHeader("Authorization") String token) {
         log.info("GET /auth/me");
-        UserDto user = authUseCase.getCurrentUser(token);
+        UserResponse user = authUseCase.getCurrentUser(token);
         return ResponseEntity.ok(user);
     }
 }
