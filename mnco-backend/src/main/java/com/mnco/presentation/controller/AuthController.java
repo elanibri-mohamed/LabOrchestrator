@@ -1,0 +1,42 @@
+package com.mnco.presentation.controller;
+
+
+
+import com.mnco.application.dto.request.LoginRequest;
+import com.mnco.application.dto.request.RegisterRequest;
+import com.mnco.application.dto.response.AuthResponse;
+import com.mnco.application.usecases.AuthUseCase;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@Slf4j
+@RestController
+@RequestMapping(value = "/api/v1/auth", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthUseCase authUseCase;
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(
+            @Valid @RequestBody RegisterRequest request) {
+
+        log.info("POST /auth/register - email={}", request.email());
+        AuthResponse response = authUseCase.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+
+        log.info("POST /auth/login - email=");
+        AuthResponse response = authUseCase.login(request);
+        return ResponseEntity.ok(response);
+    }
+}

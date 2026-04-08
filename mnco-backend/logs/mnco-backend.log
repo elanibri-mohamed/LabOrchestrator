@@ -4083,3 +4083,308 @@ org.springframework.web.servlet.resource.NoResourceFoundException: No static res
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
 	at java.base/java.lang.Thread.run(Thread.java:1575)
 2026-04-08 00:47:54 [http-nio-8080-exec-1] INFO  c.mnco.config.RequestLoggingFilter - {"timestamp":"2026-04-07T23:47:54.033622900Z","level":"WARN","traceId":"d251d8fff23c4348","httpMethod":"POST","requestUri":"/api/v1/auth/register","userId":"anonymous","httpStatus":500,"durationMs":523,"errorMessage":"HTTP 500"}
+2026-04-08 01:11:10 [main] INFO  com.mnco.MncoApplication - Starting MncoApplication using Java 23.0.2 with PID 21060 (C:\Users\ELANIBRI\Documents\LabOrchestrator\LabOrchestrator\mnco-backend\target\classes started by ELANIBRI in C:\Users\ELANIBRI\Documents\LabOrchestrator\LabOrchestrator\mnco-backend)
+2026-04-08 01:11:10 [main] DEBUG com.mnco.MncoApplication - Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-04-08 01:11:10 [main] INFO  com.mnco.MncoApplication - The following 1 profile is active: "MncoApplication"
+2026-04-08 01:11:15 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-08 01:11:16 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 943 ms. Found 6 JPA repository interfaces.
+2026-04-08 01:11:20 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-04-08 01:11:20 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-04-08 01:11:20 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-04-08 01:11:20 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-04-08 01:11:20 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 9137 ms
+2026-04-08 01:11:21 [main] INFO  c.mnco.security.service.JwtService - JWT service initialized with expiration=86400000ms
+2026-04-08 01:11:21 [main] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Starting...
+2026-04-08 01:11:22 [main] INFO  com.zaxxer.hikari.pool.HikariPool - MncoHikariPool - Added connection org.postgresql.jdbc.PgConnection@3f1d6a13
+2026-04-08 01:11:22 [main] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Start completed.
+2026-04-08 01:11:22 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/mnco_db (PostgreSQL 15.17)
+2026-04-08 01:11:22 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 3 migrations (execution time 00:00.136s)
+2026-04-08 01:11:22 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 3
+2026-04-08 01:11:22 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-04-08 01:11:23 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-08 01:11:23 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-04-08 01:11:23 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-04-08 01:11:24 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-08 01:11:24 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-08 01:11:27 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-08 01:11:27 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-08 01:11:37 [main] DEBUG c.m.s.filter.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-04-08 01:11:37 [main] DEBUG c.mnco.config.RequestLoggingFilter - Filter 'requestLoggingFilter' configured for use
+2026-04-08 01:11:37 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-08 01:11:42 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-08 01:11:43 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-08 01:11:45 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2026-04-08 01:11:45 [main] INFO  com.mnco.MncoApplication - Started MncoApplication in 38.131 seconds (process running for 41.44)
+2026-04-08 01:11:45 [scheduling-1] DEBUG c.mnco.config.LabIdleStopScheduler - Idle lab check: no labs exceeded 120min idle threshold
+2026-04-08 01:12:18 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-08 01:12:18 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown initiated...
+2026-04-08 01:12:18 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown completed.
+2026-04-08 01:13:53 [main] INFO  com.mnco.MncoApplication - Starting MncoApplication using Java 23.0.2 with PID 21404 (C:\Users\ELANIBRI\Documents\LabOrchestrator\LabOrchestrator\mnco-backend\target\classes started by ELANIBRI in C:\Users\ELANIBRI\Documents\LabOrchestrator\LabOrchestrator\mnco-backend)
+2026-04-08 01:13:53 [main] DEBUG com.mnco.MncoApplication - Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-04-08 01:13:53 [main] INFO  com.mnco.MncoApplication - The following 1 profile is active: "MncoApplication"
+2026-04-08 01:13:57 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-08 01:13:58 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 570 ms. Found 6 JPA repository interfaces.
+2026-04-08 01:14:00 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-04-08 01:14:00 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-04-08 01:14:00 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-04-08 01:14:00 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-04-08 01:14:00 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 6890 ms
+2026-04-08 01:14:01 [main] INFO  c.mnco.security.service.JwtService - JWT service initialized with expiration=86400000ms
+2026-04-08 01:14:01 [main] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Starting...
+2026-04-08 01:14:02 [main] INFO  com.zaxxer.hikari.pool.HikariPool - MncoHikariPool - Added connection org.postgresql.jdbc.PgConnection@3eff6846
+2026-04-08 01:14:02 [main] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Start completed.
+2026-04-08 01:14:02 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/mnco_db (PostgreSQL 15.17)
+2026-04-08 01:14:02 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 3 migrations (execution time 00:00.147s)
+2026-04-08 01:14:02 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 3
+2026-04-08 01:14:02 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-04-08 01:14:04 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-08 01:14:04 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-04-08 01:14:04 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-04-08 01:14:05 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-08 01:14:05 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-08 01:14:09 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-08 01:14:10 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-08 01:14:11 [main] DEBUG c.m.s.filter.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-04-08 01:14:11 [main] DEBUG c.mnco.config.RequestLoggingFilter - Filter 'requestLoggingFilter' configured for use
+2026-04-08 01:14:11 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-08 01:14:14 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-08 01:14:16 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-08 01:14:19 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2026-04-08 01:14:19 [main] INFO  com.mnco.MncoApplication - Started MncoApplication in 28.935 seconds (process running for 30.863)
+2026-04-08 01:14:20 [scheduling-1] DEBUG c.mnco.config.LabIdleStopScheduler - Idle lab check: no labs exceeded 120min idle threshold
+2026-04-08 01:14:36 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-08 01:14:36 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-04-08 01:14:36 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-04-08 01:14:37 [http-nio-8080-exec-1] ERROR c.m.e.handler.GlobalExceptionHandler - Unhandled exception at /api/v1/auth/register: No static resource api/v1/auth/register.
+org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/v1/auth/register.
+	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585)
+	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:206)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:340)
+	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapSecured$0(ObservationFilterChainDecorator.java:82)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:128)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at com.mnco.security.filter.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:49)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at com.mnco.config.RequestLoggingFilter.doFilterInternal(RequestLoggingFilter.java:51)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$0(ObservationFilterChainDecorator.java:323)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:224)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1736)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1575)
+2026-04-08 01:14:37 [http-nio-8080-exec-1] INFO  c.mnco.config.RequestLoggingFilter - {"timestamp":"2026-04-08T00:14:37.154739500Z","level":"WARN","traceId":"5ac93f8bce69400b","httpMethod":"POST","requestUri":"/api/v1/auth/register","userId":"anonymous","httpStatus":500,"durationMs":196,"errorMessage":"HTTP 500"}
+2026-04-08 01:15:01 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-08 01:15:01 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown initiated...
+2026-04-08 01:15:01 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown completed.
+2026-04-08 19:02:42 [main] INFO  com.mnco.MncoApplication - Starting MncoApplication using Java 23.0.2 with PID 7828 (C:\Users\ELANIBRI\Documents\LabOrchestrator\LabOrchestrator\mnco-backend\target\classes started by ELANIBRI in C:\Users\ELANIBRI\Documents\LabOrchestrator\LabOrchestrator\mnco-backend)
+2026-04-08 19:02:42 [main] DEBUG com.mnco.MncoApplication - Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-04-08 19:02:42 [main] INFO  com.mnco.MncoApplication - The following 1 profile is active: "MncoApplication"
+2026-04-08 19:02:48 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-08 19:02:48 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 504 ms. Found 6 JPA repository interfaces.
+2026-04-08 19:02:51 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-04-08 19:02:51 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-04-08 19:02:51 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-04-08 19:02:51 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-04-08 19:02:51 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 8772 ms
+2026-04-08 19:02:52 [main] INFO  c.mnco.security.service.JwtService - JWT service initialized with expiration=86400000ms
+2026-04-08 19:02:52 [main] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Starting...
+2026-04-08 19:02:53 [main] INFO  com.zaxxer.hikari.pool.HikariPool - MncoHikariPool - Added connection org.postgresql.jdbc.PgConnection@4e52d2f2
+2026-04-08 19:02:53 [main] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Start completed.
+2026-04-08 19:02:53 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/mnco_db (PostgreSQL 15.17)
+2026-04-08 19:02:54 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 3 migrations (execution time 00:00.239s)
+2026-04-08 19:02:54 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 3
+2026-04-08 19:02:54 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-04-08 19:02:54 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-08 19:02:54 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-04-08 19:02:55 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-04-08 19:02:56 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-08 19:02:56 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-08 19:02:59 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-08 19:02:59 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-08 19:03:00 [main] DEBUG c.m.s.filter.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-04-08 19:03:00 [main] DEBUG c.mnco.config.RequestLoggingFilter - Filter 'requestLoggingFilter' configured for use
+2026-04-08 19:03:00 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-08 19:03:03 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-08 19:03:05 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-08 19:03:07 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2026-04-08 19:03:07 [main] INFO  com.mnco.MncoApplication - Started MncoApplication in 26.272 seconds (process running for 30.767)
+2026-04-08 19:03:07 [scheduling-1] DEBUG c.mnco.config.LabIdleStopScheduler - Idle lab check: no labs exceeded 120min idle threshold
+2026-04-08 19:05:24 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-08 19:05:24 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-04-08 19:05:24 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-04-08 19:05:24 [http-nio-8080-exec-1] INFO  c.mnco.config.RequestLoggingFilter - {"timestamp":"2026-04-08T18:05:24.821892400Z","level":"WARN","traceId":"c70212b1f5364f06","httpMethod":"POST","requestUri":"/api/auth/register","userId":"anonymous","httpStatus":403,"durationMs":16,"errorMessage":"HTTP 403"}
+2026-04-08 19:05:50 [http-nio-8080-exec-2] INFO  c.mnco.config.RequestLoggingFilter - {"timestamp":"2026-04-08T18:05:50.452706200Z","level":"WARN","traceId":"818bdc9771e146bf","httpMethod":"POST","requestUri":"/api/auth/register","userId":"anonymous","httpStatus":403,"durationMs":4,"errorMessage":"HTTP 403"}
+2026-04-08 19:08:36 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-08 19:08:36 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown initiated...
+2026-04-08 19:08:36 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown completed.
+2026-04-08 19:08:48 [main] INFO  com.mnco.MncoApplication - Starting MncoApplication using Java 23.0.2 with PID 12340 (C:\Users\ELANIBRI\Documents\LabOrchestrator\LabOrchestrator\mnco-backend\target\classes started by ELANIBRI in C:\Users\ELANIBRI\Documents\LabOrchestrator\LabOrchestrator\mnco-backend)
+2026-04-08 19:08:48 [main] DEBUG com.mnco.MncoApplication - Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-04-08 19:08:48 [main] INFO  com.mnco.MncoApplication - The following 1 profile is active: "MncoApplication"
+2026-04-08 19:08:51 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-08 19:08:51 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 373 ms. Found 6 JPA repository interfaces.
+2026-04-08 19:08:53 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-04-08 19:08:53 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-04-08 19:08:53 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-04-08 19:08:53 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-04-08 19:08:53 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4282 ms
+2026-04-08 19:08:53 [main] INFO  c.mnco.security.service.JwtService - JWT service initialized with expiration=86400000ms
+2026-04-08 19:08:54 [main] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Starting...
+2026-04-08 19:08:54 [main] INFO  com.zaxxer.hikari.pool.HikariPool - MncoHikariPool - Added connection org.postgresql.jdbc.PgConnection@d0a2c82
+2026-04-08 19:08:54 [main] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Start completed.
+2026-04-08 19:08:54 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/mnco_db (PostgreSQL 15.17)
+2026-04-08 19:08:54 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 3 migrations (execution time 00:00.121s)
+2026-04-08 19:08:54 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 3
+2026-04-08 19:08:54 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-04-08 19:08:55 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-08 19:08:55 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-04-08 19:08:55 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-04-08 19:08:55 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-08 19:08:55 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-08 19:08:57 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-08 19:08:58 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-08 19:08:59 [main] DEBUG c.m.s.filter.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-04-08 19:08:59 [main] DEBUG c.mnco.config.RequestLoggingFilter - Filter 'requestLoggingFilter' configured for use
+2026-04-08 19:08:59 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-08 19:09:01 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-08 19:09:01 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-08 19:09:02 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2026-04-08 19:09:02 [main] INFO  com.mnco.MncoApplication - Started MncoApplication in 14.89 seconds (process running for 16.525)
+2026-04-08 19:09:03 [scheduling-1] DEBUG c.mnco.config.LabIdleStopScheduler - Idle lab check: no labs exceeded 120min idle threshold
+2026-04-08 19:09:15 [http-nio-8080-exec-3] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-08 19:09:15 [http-nio-8080-exec-3] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-04-08 19:09:15 [http-nio-8080-exec-3] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2026-04-08 19:09:15 [http-nio-8080-exec-3] INFO  c.m.p.controller.AuthController - POST /auth/register - email=test@example.com
+2026-04-08 19:09:15 [http-nio-8080-exec-3] DEBUG com.mnco.config.LoggingAspect - → USE CASE: AuthService.register(..)
+2026-04-08 19:09:15 [http-nio-8080-exec-3] INFO  c.m.application.usecases.AuthService - Registration attempt: username='testuser'
+2026-04-08 19:09:16 [http-nio-8080-exec-3] INFO  c.m.application.usecases.AuthService - User registered: id=c96ae581-ede2-4a44-86d2-ec8fa010e73e, username='testuser'
+2026-04-08 19:09:16 [http-nio-8080-exec-3] DEBUG com.mnco.config.LoggingAspect - ← USE CASE: AuthService.register(..) completed in 720ms
+2026-04-08 19:09:16 [http-nio-8080-exec-3] INFO  c.mnco.config.RequestLoggingFilter - {"timestamp":"2026-04-08T18:09:16.636572600Z","level":"INFO","traceId":"65b859792aed4ab6","httpMethod":"POST","requestUri":"/api/v1/auth/register","userId":"anonymous","httpStatus":201,"durationMs":978}
+2026-04-08 19:12:58 [http-nio-8080-exec-1] DEBUG c.m.s.filter.JwtAuthenticationFilter - Authenticated user 'testuser' for request: /api/v1/labs
+2026-04-08 19:12:58 [http-nio-8080-exec-1] DEBUG com.mnco.config.LoggingAspect - → USE CASE: LabService.getLabsByOwner(..)
+2026-04-08 19:12:58 [http-nio-8080-exec-1] DEBUG com.mnco.config.LoggingAspect - ← USE CASE: LabService.getLabsByOwner(..) completed in 8ms
+2026-04-08 19:12:58 [http-nio-8080-exec-1] INFO  c.mnco.config.RequestLoggingFilter - {"timestamp":"2026-04-08T18:12:58.837502100Z","level":"INFO","traceId":"80b83d036be64c37","httpMethod":"GET","requestUri":"/api/v1/labs","userId":"testuser","httpStatus":200,"durationMs":102}
+2026-04-08 19:15:12 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-08 19:15:12 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown initiated...
+2026-04-08 19:15:12 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown completed.
