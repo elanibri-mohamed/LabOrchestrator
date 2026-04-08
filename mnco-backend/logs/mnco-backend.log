@@ -4388,3 +4388,39 @@ org.springframework.web.servlet.resource.NoResourceFoundException: No static res
 2026-04-08 19:15:12 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2026-04-08 19:15:12 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown initiated...
 2026-04-08 19:15:12 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown completed.
+2026-04-08 21:08:41 [main] INFO  com.mnco.MncoApplication - Starting MncoApplication using Java 23.0.2 with PID 1920 (C:\Users\ELANIBRI\Documents\LabOrchestrator\LabOrchestrator\mnco-backend\target\classes started by ELANIBRI in C:\Users\ELANIBRI\Documents\LabOrchestrator\LabOrchestrator\mnco-backend)
+2026-04-08 21:08:41 [main] DEBUG com.mnco.MncoApplication - Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-04-08 21:08:41 [main] INFO  com.mnco.MncoApplication - The following 1 profile is active: "MncoApplication"
+2026-04-08 21:08:45 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-08 21:08:46 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 810 ms. Found 6 JPA repository interfaces.
+2026-04-08 21:08:48 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-04-08 21:08:48 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-04-08 21:08:48 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-04-08 21:08:48 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-04-08 21:08:48 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 7508 ms
+2026-04-08 21:08:49 [main] INFO  c.mnco.security.service.JwtService - JWT service initialized with expiration=86400000ms
+2026-04-08 21:08:49 [main] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Starting...
+2026-04-08 21:08:50 [main] INFO  com.zaxxer.hikari.pool.HikariPool - MncoHikariPool - Added connection org.postgresql.jdbc.PgConnection@50fd739d
+2026-04-08 21:08:50 [main] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Start completed.
+2026-04-08 21:08:50 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/mnco_db (PostgreSQL 15.17)
+2026-04-08 21:08:50 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 3 migrations (execution time 00:00.147s)
+2026-04-08 21:08:50 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 3
+2026-04-08 21:08:50 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-04-08 21:08:51 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-08 21:08:51 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-04-08 21:08:51 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-04-08 21:08:52 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-08 21:08:52 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-08 21:08:54 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-08 21:08:54 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-08 21:08:56 [main] DEBUG c.m.s.filter.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-04-08 21:08:56 [main] DEBUG c.mnco.config.RequestLoggingFilter - Filter 'requestLoggingFilter' configured for use
+2026-04-08 21:08:56 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-08 21:08:59 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-08 21:09:00 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-08 21:09:01 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2026-04-08 21:09:01 [main] INFO  com.mnco.MncoApplication - Started MncoApplication in 22.191 seconds (process running for 23.447)
+2026-04-08 21:09:02 [scheduling-1] DEBUG c.mnco.config.LabIdleStopScheduler - Idle lab check: no labs exceeded 120min idle threshold
+2026-04-08 21:10:12 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-08 21:10:12 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown initiated...
+2026-04-08 21:10:12 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - MncoHikariPool - Shutdown completed.
