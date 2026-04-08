@@ -106,6 +106,42 @@ public class AuthService implements AuthUseCase {
         return userMapper.toResponse(user);
     }
 
+    @Override
+    @Transactional
+    public AuthResponse refreshToken(String refreshToken) {
+        log.info("Token refresh attempt");
+        String username = jwtService.extractUsername(refreshToken);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new InvalidCredentialsException("User not found: " + username));
+
+        if (!user.isEnabled()) {
+            throw new InvalidCredentialsException("Account is disabled");
+        }
+
+        String newToken = jwtService.generateToken(user.getUsername(), user.getRole().name());
+        return AuthResponse.of(newToken, jwtService.getExpirationMs(),
+                user.getId(), user.getUsername(), user.getEmail(), user.getRole());
+    }
+
+    @Override
+    @Transactional
+    public void logout(String token) {
+        log.info("Logout attempt");
+        // Token invalidation logic would go here
+        // For now, this is a no-op as tokens are stateless
+        // In a production system, you might add the token to a blacklist
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponse getCurrentUser(String token) {
+        log.info("Get current user attempt");
+        String username = jwtService.extractUsername(token);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+        return userMapper.toResponse(user);
+    }
+
     private String resolveClientIp() {
         try {
             var attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
