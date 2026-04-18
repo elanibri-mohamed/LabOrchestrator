@@ -344,3 +344,5 @@ It can be used as a **training platform for networking and cybersecurity educati
 # License
 
 This project is released under the MIT License.
+
+docker run -d --name mnco-postgres -e POSTGRES_DB=mnco_db -e POSTGRES_USER=mnco_user -e POSTGRES_PASSWORD=mnco_pass -p 5432:5432  postgres:15-alpine
