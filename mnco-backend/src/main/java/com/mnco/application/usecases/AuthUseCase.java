@@ -33,4 +33,27 @@ public interface AuthUseCase {
      * @param username the authenticated principal's username
      */
     UserResponse getProfile(String username);
+
+    /**
+     * Refreshes an expired access token using a refresh token.
+     *
+     * @param refreshToken the refresh token
+     * @return auth response with new access token
+     */
+    AuthResponse refreshToken(String refreshToken);
+
+    /**
+     * Logs out the user by invalidating their token.
+     *
+     * @param token the access token to invalidate
+     */
+    void logout(String token);
+
+    /**
+     * Retrieves the current authenticated user.
+     *
+     * @param token the access token
+     * @return user response
+     */
+    UserResponse getCurrentUser(String token);
 }

@@ -4,8 +4,7 @@ import com.mnco.application.dto.request.CloneLabRequest;
 import com.mnco.application.dto.request.CreateLabRequest;
 import com.mnco.application.dto.response.LabResponse;
 import com.mnco.application.mapper.LabMapper;
-import com.mnco.domain.entities.AuditLog.EventType;
-import com.mnco.domain.entities.AuditLog.Result;
+import com.mnco.domain.entities.AuditLog;
 import com.mnco.domain.entities.Lab;
 import com.mnco.domain.entities.LabStatus;
 import com.mnco.domain.entities.ResourceQuota;
@@ -22,7 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -54,7 +56,7 @@ public class LabService implements LabUseCase {
         ResourceQuota quota = quotaRepository.findOrCreateDefault(ownerId);
 
         if (!quota.canAllocate(request.cpu(), request.ram(), request.storage())) {
-            auditLogService.logLabEventFailure(EventType.LAB_CREATED, ownerId, username,
+            auditLogService.logLabEventFailure(AuditLog.EventType.LAB_CREATED, ownerId, username,
                     null, request.name(), "QUOTA_EXCEEDED");
             throw new QuotaExceededException(String.format(
                     "Quota exceeded. Remaining: labs=%d cpu=%d ram=%dGB storage=%dGB.",
@@ -79,8 +81,8 @@ public class LabService implements LabUseCase {
             saved.setEvengNodeId(result.evengNodeId());
             saved.setStatus(LabStatus.STOPPED);
             Lab updated = labRepository.save(saved);
-            auditLogService.logLabEvent(EventType.LAB_CREATED, ownerId, username,
-                    updated.getId(), updated.getName(), Result.SUCCESS);
+            auditLogService.logLabEvent(AuditLog.EventType.LAB_CREATED, ownerId, username,
+                    updated.getId(), updated.getName(), AuditLog.Result.SUCCESS);
             log.info("Lab created: id={}", updated.getId());
             return labMapper.toResponse(updated);
         } catch (Exception ex) {
@@ -89,7 +91,7 @@ public class LabService implements LabUseCase {
             labRepository.save(saved);
             quota.release(request.cpu(), request.ram(), request.storage());
             quotaRepository.save(quota);
-            auditLogService.logLabEventFailure(EventType.LAB_CREATED, ownerId, username,
+            auditLogService.logLabEventFailure(AuditLog.EventType.LAB_CREATED, ownerId, username,
                     saved.getId(), saved.getName(), "EVENG_ERROR");
             throw new EveNgIntegrationException("Failed to create lab: " + ex.getMessage(), ex);
         }
@@ -144,8 +146,8 @@ public class LabService implements LabUseCase {
             savedClone.setStatus(LabStatus.STOPPED);
             Lab updated = labRepository.save(savedClone);
 
-            auditLogService.logLabEvent(EventType.LAB_CLONED, requesterId, username,
-                    updated.getId(), updated.getName(), Result.SUCCESS);
+            auditLogService.logLabEvent(AuditLog.EventType.LAB_CLONED, requesterId, username,
+                    updated.getId(), updated.getName(), AuditLog.Result.SUCCESS);
 
             log.info("Lab cloned: sourceId={} → cloneId={}", sourceLabId, updated.getId());
             return labMapper.toResponse(updated);
@@ -155,7 +157,7 @@ public class LabService implements LabUseCase {
             labRepository.save(savedClone);
             quota.release(source.getCpuAllocated(), source.getRamAllocated(), source.getStorageAllocated());
             quotaRepository.save(quota);
-            auditLogService.logLabEventFailure(EventType.LAB_CLONED, requesterId, username,
+            auditLogService.logLabEventFailure(AuditLog.EventType.LAB_CLONED, requesterId, username,
                     sourceLabId, source.getName(), "EVENG_ERROR");
             throw new EveNgIntegrationException("Failed to clone lab: " + ex.getMessage(), ex);
         }
@@ -165,9 +167,9 @@ public class LabService implements LabUseCase {
 
     @Override
     @Transactional
-    public LabResponse startLab(UUID labId, UUID requesterId) {
+    public LabResponse startLab(UUID labId, UUID requesterId, boolean isAdmin) {
         String username = resolveUsername(requesterId);
-        Lab lab = findLabAndCheckOwnership(labId, requesterId);
+        Lab lab = findLabAndCheckAccess(labId, requesterId, isAdmin);
         if (!lab.isStartable()) {
             throw new InvalidLabStateException(String.format(
                     "Lab '%s' cannot be started from status '%s'.", lab.getName(), lab.getStatus()));
@@ -178,14 +180,14 @@ public class LabService implements LabUseCase {
             eveNgService.startLab(lab.getEvengLabId());
             lab.markStarted();
             Lab updated = labRepository.save(lab);
-            auditLogService.logLabEvent(EventType.LAB_STARTED, requesterId, username,
-                    lab.getId(), lab.getName(), Result.SUCCESS);
+            auditLogService.logLabEvent(AuditLog.EventType.LAB_STARTED, requesterId, username,
+                    lab.getId(), lab.getName(), AuditLog.Result.SUCCESS);
             log.info("Lab started: id={}", updated.getId());
             return labMapper.toResponse(updated);
         } catch (Exception ex) {
             lab.markError();
             labRepository.save(lab);
-            auditLogService.logLabEventFailure(EventType.LAB_STARTED, requesterId, username,
+            auditLogService.logLabEventFailure(AuditLog.EventType.LAB_STARTED, requesterId, username,
                     lab.getId(), lab.getName(), "EVENG_ERROR");
             throw new EveNgIntegrationException("Failed to start lab: " + ex.getMessage(), ex);
         }
@@ -195,9 +197,9 @@ public class LabService implements LabUseCase {
 
     @Override
     @Transactional
-    public LabResponse stopLab(UUID labId, UUID requesterId) {
+    public LabResponse stopLab(UUID labId, UUID requesterId, boolean isAdmin) {
         String username = resolveUsername(requesterId);
-        Lab lab = findLabAndCheckOwnership(labId, requesterId);
+        Lab lab = findLabAndCheckAccess(labId, requesterId, isAdmin);
         if (!lab.isStoppable()) {
             throw new InvalidLabStateException(String.format(
                     "Lab '%s' is not RUNNING (current: %s).", lab.getName(), lab.getStatus()));
@@ -208,14 +210,14 @@ public class LabService implements LabUseCase {
             eveNgService.stopLab(lab.getEvengLabId());
             lab.markStopped();
             Lab updated = labRepository.save(lab);
-            auditLogService.logLabEvent(EventType.LAB_STOPPED, requesterId, username,
-                    lab.getId(), lab.getName(), Result.SUCCESS);
+            auditLogService.logLabEvent(AuditLog.EventType.LAB_STOPPED, requesterId, username,
+                    lab.getId(), lab.getName(), AuditLog.Result.SUCCESS);
             log.info("Lab stopped: id={}", updated.getId());
             return labMapper.toResponse(updated);
         } catch (Exception ex) {
             lab.markError();
             labRepository.save(lab);
-            auditLogService.logLabEventFailure(EventType.LAB_STOPPED, requesterId, username,
+            auditLogService.logLabEventFailure(AuditLog.EventType.LAB_STOPPED, requesterId, username,
                     lab.getId(), lab.getName(), "EVENG_ERROR");
             throw new EveNgIntegrationException("Failed to stop lab: " + ex.getMessage(), ex);
         }
@@ -242,13 +244,13 @@ public class LabService implements LabUseCase {
             ResourceQuota quota = quotaRepository.findOrCreateDefault(requesterId);
             quota.release(lab.getCpuAllocated(), lab.getRamAllocated(), lab.getStorageAllocated());
             quotaRepository.save(quota);
-            auditLogService.logLabEvent(EventType.LAB_DELETED, requesterId, username,
-                    lab.getId(), lab.getName(), Result.SUCCESS);
+            auditLogService.logLabEvent(AuditLog.EventType.LAB_DELETED, requesterId, username,
+                    lab.getId(), lab.getName(), AuditLog.Result.SUCCESS);
             log.info("Lab deleted: id={}", labId);
         } catch (Exception ex) {
             lab.markError();
             labRepository.save(lab);
-            auditLogService.logLabEventFailure(EventType.LAB_DELETED, requesterId, username,
+            auditLogService.logLabEventFailure(AuditLog.EventType.LAB_DELETED, requesterId, username,
                     lab.getId(), lab.getName(), "EVENG_ERROR");
             throw new EveNgIntegrationException("Failed to delete lab: " + ex.getMessage(), ex);
         }
@@ -294,7 +296,109 @@ public class LabService implements LabUseCase {
         return labRepository.findAll().stream().map(labMapper::toResponse).toList();
     }
 
+    // ── Lab Discovery (Read-Only Mode) ────────────────────────────────────────
+
+    @Override
+    @Transactional
+    public List<LabResponse> discoverLabsFromEveNg() {
+        log.info("Starting lab discovery from EVE-NG server");
+        List<LabResponse> discoveredLabs = new ArrayList<>();
+
+        try {
+            List<com.mnco.infrastructure.external.eveng.model.EveNgLabInfo> eveNgLabs = eveNgService.getAllLabs();
+            log.info("Found {} labs in EVE-NG", eveNgLabs.size());
+
+            for (com.mnco.infrastructure.external.eveng.model.EveNgLabInfo eveNgLab : eveNgLabs) {
+                // Check if lab already exists in DB by evengLabId
+                Optional<Lab> existingLab = labRepository.findByEvengLabId(eveNgLab.path());
+
+                if (existingLab.isPresent()) {
+                    log.debug("Lab already synced: {}", eveNgLab.path());
+                    continue;
+                }
+
+                try {
+                    // Parse resources from nodes
+                    List<com.mnco.infrastructure.external.eveng.model.EveNgNodeInfo> nodes =
+                            eveNgService.getLabNodes(eveNgLab.path());
+
+                    int totalCpu = 0;
+                    int totalRam = 0;
+                    int totalStorage = 0;
+
+                    for (com.mnco.infrastructure.external.eveng.model.EveNgNodeInfo node : nodes) {
+                        totalCpu += node.getCpuCount();
+                        totalRam += node.getRamGb();
+                        totalStorage += node.getDiskGb();
+                    }
+
+                    // Ensure minimum allocations
+                    if (totalCpu == 0) totalCpu = 1;
+                    if (totalRam == 0) totalRam = 1;
+                    if (totalStorage == 0) totalStorage = 1;
+
+                    // Create local Lab record - assign to ADMIN user
+                    // Get ADMIN user (assume ID known or find first admin)
+                    UUID adminUserId = userRepository.findAll().stream()
+                            .filter(u -> u.getRole().toString().equals("ADMIN"))
+                            .map(u -> u.getId())
+                            .findFirst()
+                            .orElse(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+
+                    Lab newLab = Lab.builder()
+                            .name(eveNgLab.getDisplayName())
+                            .description(eveNgLab.description() != null ? eveNgLab.description() :
+                                    "Lab discovered from EVE-NG - " + eveNgLab.path())
+                            .ownerId(adminUserId)
+                            .evengLabId(eveNgLab.path())
+                            .cpuAllocated(totalCpu)
+                            .ramAllocated(totalRam)
+                            .storageAllocated(totalStorage)
+                            .status(LabStatus.STOPPED)
+                            .syncedFromEveNg(true)
+                            .externalMetadata(String.format(
+                                    "{\"nodeCount\":%d,\"discoveredAt\":\"%s\"}",
+                                    nodes.size(), Instant.now()))
+                            .build();
+
+                    Lab saved = labRepository.save(newLab);
+                    log.info("Lab synced from EVE-NG: id={} evengPath={}", saved.getId(), eveNgLab.path());
+                    discoveredLabs.add(labMapper.toResponse(saved));
+
+                    // Log discovery event
+                    auditLogService.logLabEvent(
+                            AuditLog.EventType.LAB_CREATED, adminUserId, "SYSTEM",
+                            saved.getId(), saved.getName(), AuditLog.Result.SUCCESS);
+
+                } catch (Exception ex) {
+                    log.warn("Failed to sync lab {}: {}", eveNgLab.path(), ex.getMessage());
+                    // Continue with next lab on error
+                }
+            }
+
+            log.info("Lab discovery completed: {} labs synced", discoveredLabs.size());
+            return discoveredLabs;
+
+        } catch (Exception ex) {
+            log.error("Lab discovery failed: {}", ex.getMessage(), ex);
+            throw new EveNgIntegrationException("Failed to discover labs from EVE-NG: " + ex.getMessage(), ex);
+        }
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    /**
+     * Check if user has access to the lab:
+     * - ADMIN: can access any lab
+     * - Other roles: can only access labs they own (assigned to them)
+     */
+    private Lab findLabAndCheckAccess(UUID labId, UUID requesterId, boolean isAdmin) {
+        Lab lab = labRepository.findById(labId)
+                .orElseThrow(() -> new ResourceNotFoundException("Lab not found: " + labId));
+        if (!isAdmin && !lab.isOwnedBy(requesterId))
+            throw new UnauthorizedException("Access denied: lab does not belong to you");
+        return lab;
+    }
 
     private Lab findLabAndCheckOwnership(UUID labId, UUID requesterId) {
         Lab lab = labRepository.findById(labId)

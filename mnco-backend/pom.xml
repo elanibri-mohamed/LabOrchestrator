@@ -15,7 +15,7 @@
     <groupId>com.mnco</groupId>
     <artifactId>mnco-backend</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>MNCO - Multi-Tenant Network & Cybersecurity Lab Orchestrator</name>
+    <name>MNCO - Multi-Tenant Network and Cybersecurity Lab Orchestrator</name>
     <description>Production-grade EVE-NG Lab Orchestration Platform</description>
 
     <properties>
@@ -61,12 +61,13 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+            <version>10.11.0</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
+            <version>10.11.0</version>
         </dependency>
-
         <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

@@ -72,4 +72,9 @@ public class LabRepositoryAdapter implements LabRepository {
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<Lab> findByEvengLabId(String evengLabId) {
+        return jpaRepository.findByEvengLabId(evengLabId).map(labMapper::toDomain);
+    }
 }

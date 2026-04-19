@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -20,6 +21,8 @@ public interface LabJpaRepository extends JpaRepository<LabJpaEntity, UUID> {
     List<LabJpaEntity> findByOwnerId(UUID ownerId);
 
     List<LabJpaEntity> findByStatus(LabStatus status);
+
+    Optional<LabJpaEntity> findByEvengLabId(String evengLabId);
 
     @Query("""
             SELECT COUNT(l) FROM LabJpaEntity l

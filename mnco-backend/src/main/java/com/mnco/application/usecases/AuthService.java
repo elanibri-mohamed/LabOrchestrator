@@ -49,11 +49,17 @@ public class AuthService implements AuthUseCase {
             throw new DuplicateResourceException("Email already registered: " + request.email());
         }
 
+        // Determine role: use provided role or default to STUDENT
+        UserRole userRole = UserRole.STUDENT;
+        if (request.role() != null && !request.role().isBlank()) {
+            userRole = UserRole.valueOf(request.role());
+        }
+
         User user = User.builder()
                 .username(request.username())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .role(UserRole.STUDENT)
+                .role(userRole)
                 .enabled(true)
                 .build();
 
@@ -101,6 +107,42 @@ public class AuthService implements AuthUseCase {
     @Override
     @Transactional(readOnly = true)
     public UserResponse getProfile(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+        return userMapper.toResponse(user);
+    }
+
+    @Override
+    @Transactional
+    public AuthResponse refreshToken(String refreshToken) {
+        log.info("Token refresh attempt");
+        String username = jwtService.extractUsername(refreshToken);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new InvalidCredentialsException("User not found: " + username));
+
+        if (!user.isEnabled()) {
+            throw new InvalidCredentialsException("Account is disabled");
+        }
+
+        String newToken = jwtService.generateToken(user.getUsername(), user.getRole().name());
+        return AuthResponse.of(newToken, jwtService.getExpirationMs(),
+                user.getId(), user.getUsername(), user.getEmail(), user.getRole());
+    }
+
+    @Override
+    @Transactional
+    public void logout(String token) {
+        log.info("Logout attempt");
+        // Token invalidation logic would go here
+        // For now, this is a no-op as tokens are stateless
+        // In a production system, you might add the token to a blacklist
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponse getCurrentUser(String token) {
+        log.info("Get current user attempt");
+        String username = jwtService.extractUsername(token);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
         return userMapper.toResponse(user);

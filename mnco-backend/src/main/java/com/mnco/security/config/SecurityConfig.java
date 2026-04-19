@@ -26,10 +26,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-/**
- * Spring Security 6 configuration — stateless JWT, RBAC, CORS.
- * Registers both JwtAuthenticationFilter and RequestLoggingFilter (FR-MO-03).
- */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -48,17 +44,20 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public auth endpoints
                 .requestMatchers(HttpMethod.POST,
-                        "/auth/register", "/auth/login", "/auth/refresh").permitAll()
+                        "/api/v1/auth/register",
+                        "/api/v1/auth/login",
+                        "/api/v1/auth/refresh").permitAll()
                 // Public actuator
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                // API contract — public
+                .requestMatchers("/api-docs/**").permitAll()
                 // Admin-only
-                .requestMatchers("/admin/**", "/audit/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/admin/**", "/api/v1/audit/**").hasRole("ADMIN")
                 // Everything else requires authentication
                 .anyRequest().authenticated()
             )
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())
-            // Logging filter runs first, then JWT auth
             .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
