@@ -167,9 +167,9 @@ public class LabService implements LabUseCase {
 
     @Override
     @Transactional
-    public LabResponse startLab(UUID labId, UUID requesterId) {
+    public LabResponse startLab(UUID labId, UUID requesterId, boolean isAdmin) {
         String username = resolveUsername(requesterId);
-        Lab lab = findLabAndCheckOwnership(labId, requesterId);
+        Lab lab = findLabAndCheckAccess(labId, requesterId, isAdmin);
         if (!lab.isStartable()) {
             throw new InvalidLabStateException(String.format(
                     "Lab '%s' cannot be started from status '%s'.", lab.getName(), lab.getStatus()));
@@ -197,9 +197,9 @@ public class LabService implements LabUseCase {
 
     @Override
     @Transactional
-    public LabResponse stopLab(UUID labId, UUID requesterId) {
+    public LabResponse stopLab(UUID labId, UUID requesterId, boolean isAdmin) {
         String username = resolveUsername(requesterId);
-        Lab lab = findLabAndCheckOwnership(labId, requesterId);
+        Lab lab = findLabAndCheckAccess(labId, requesterId, isAdmin);
         if (!lab.isStoppable()) {
             throw new InvalidLabStateException(String.format(
                     "Lab '%s' is not RUNNING (current: %s).", lab.getName(), lab.getStatus()));
@@ -386,6 +386,19 @@ public class LabService implements LabUseCase {
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    /**
+     * Check if user has access to the lab:
+     * - ADMIN: can access any lab
+     * - Other roles: can only access labs they own (assigned to them)
+     */
+    private Lab findLabAndCheckAccess(UUID labId, UUID requesterId, boolean isAdmin) {
+        Lab lab = labRepository.findById(labId)
+                .orElseThrow(() -> new ResourceNotFoundException("Lab not found: " + labId));
+        if (!isAdmin && !lab.isOwnedBy(requesterId))
+            throw new UnauthorizedException("Access denied: lab does not belong to you");
+        return lab;
+    }
 
     private Lab findLabAndCheckOwnership(UUID labId, UUID requesterId) {
         Lab lab = labRepository.findById(labId)

@@ -61,7 +61,7 @@ public class LabController {
             @AuthenticationPrincipal MncoUserDetails principal) {
         log.info("POST /api/v1/labs/{}/start — user={}", id, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success("Lab started",
-                labUseCase.startLab(id, principal.getUserId())));
+                labUseCase.startLab(id, principal.getUserId(), principal.isAdmin())));
     }
 
     @PostMapping("/{id}/stop")
@@ -70,7 +70,7 @@ public class LabController {
             @AuthenticationPrincipal MncoUserDetails principal) {
         log.info("POST /api/v1/labs/{}/stop — user={}", id, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success("Lab stopped",
-                labUseCase.stopLab(id, principal.getUserId())));
+                labUseCase.stopLab(id, principal.getUserId(), principal.isAdmin())));
     }
 
     @PostMapping("/{id}/clone")

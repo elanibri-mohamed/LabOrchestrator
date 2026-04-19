@@ -15,9 +15,9 @@ public interface LabUseCase {
 
     LabResponse createLab(CreateLabRequest request, UUID ownerId);
 
-    LabResponse startLab(UUID labId, UUID requesterId);
+    LabResponse startLab(UUID labId, UUID requesterId, boolean isAdmin);
 
-    LabResponse stopLab(UUID labId, UUID requesterId);
+    LabResponse stopLab(UUID labId, UUID requesterId, boolean isAdmin);
 
     void deleteLab(UUID labId, UUID requesterId);
 
