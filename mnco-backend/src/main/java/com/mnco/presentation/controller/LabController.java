@@ -107,4 +107,14 @@ public class LabController {
     public ResponseEntity<ApiResponse<List<LabResponse>>> getAllLabsAdmin() {
         return ResponseEntity.ok(ApiResponse.success(labUseCase.getAllLabs()));
     }
+
+    @PostMapping("/sync-from-eveng")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")
+    public ResponseEntity<ApiResponse<List<LabResponse>>> syncLabsFromEveNg() {
+        log.info("POST /api/v1/labs/sync-from-eveng — user initiated lab discovery");
+        List<LabResponse> synced = labUseCase.discoverLabsFromEveNg();
+        return ResponseEntity.ok(ApiResponse.success(
+                String.format("Lab discovery completed: %d labs synced", synced.size()),
+                synced));
+    }
 }

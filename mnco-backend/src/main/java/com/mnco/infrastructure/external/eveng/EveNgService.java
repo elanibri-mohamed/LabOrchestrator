@@ -2,10 +2,13 @@ package com.mnco.infrastructure.external.eveng;
 
 import com.mnco.domain.entities.Lab;
 import com.mnco.infrastructure.external.eveng.model.EveNgCloneResult;
+import com.mnco.infrastructure.external.eveng.model.EveNgLabInfo;
 import com.mnco.infrastructure.external.eveng.model.EveNgLabResult;
+import com.mnco.infrastructure.external.eveng.model.EveNgNodeInfo;
 import com.mnco.infrastructure.external.eveng.model.EveNgNodeStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Port for all EVE-NG orchestration operations.
@@ -48,4 +51,29 @@ public interface EveNgService {
      * @return console details (protocol, host, port, webSocketUrl)
      */
     EveNgNodeConsoleInfo getNodeConsoleInfo(String evengLabId, String nodeId);
+
+    /**
+     * Retrieve all labs available in EVE-NG server.
+     * Used for lab discovery and synchronization (read-only mode).
+     *
+     * @return list of all labs found in EVE-NG
+     */
+    List<EveNgLabInfo> getAllLabs();
+
+    /**
+     * Retrieve details for a specific lab by its EVE-NG path.
+     *
+     * @param evengLabPath EVE-NG lab path (e.g., "/lab-name.unl")
+     * @return lab details if found
+     */
+    Optional<EveNgLabInfo> getLabByPath(String evengLabPath);
+
+    /**
+     * Retrieve all nodes within a lab.
+     * Used to parse resource specifications from node configurations.
+     *
+     * @param evengLabId EVE-NG lab path
+     * @return list of nodes in the lab
+     */
+    List<EveNgNodeInfo> getLabNodes(String evengLabId);
 }

@@ -2,7 +2,7 @@ version: '3.9'
 
 # ── MNCO Local Development Stack ─────────────────────────────────────────────
 # Spins up: PostgreSQL + backend Spring Boot app
-# EVE-NG runs separately as a VM (use simulation-mode=true for local dev)
+# EVE-NG runs separately as a VM or on network - backend will fail if unreachable
 
 services:
 
@@ -46,7 +46,7 @@ services:
       EVENG_BASE_URL: http://192.168.100.10
       EVENG_USERNAME: admin
       EVENG_PASSWORD: eve
-      EVENG_SIMULATION: "true"   # Set to false when EVE-NG VM is available
+      EVENG_SIMULATION: "false"   # Set to false when EVE-NG VM is available
       SERVER_PORT: 8080
     ports:
       - "8080:8080"

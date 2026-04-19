@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.mnco.domain.entities.Lab;
 import com.mnco.exception.custom.EveNgIntegrationException;
 import com.mnco.infrastructure.external.eveng.model.EveNgCloneResult;
+import com.mnco.infrastructure.external.eveng.model.EveNgLabInfo;
 import com.mnco.infrastructure.external.eveng.model.EveNgLabResult;
+import com.mnco.infrastructure.external.eveng.model.EveNgNodeInfo;
 import com.mnco.infrastructure.external.eveng.model.EveNgNodeStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -20,17 +21,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Production EVE-NG REST API client (API v2).
- * Activated when eveng.simulation-mode=false (default).
  *
  * All operations authenticate via EVE-NG session cookie per call.
  * Implements: create, start, stop, delete, clone (FR-LM-06), console (FR-LM-09).
+ * 
+ * NOTE: Throws EveNgIntegrationException if EVE-NG server is unreachable.
+ * No simulation mode available - errors will propagate to caller.
  */
 @Slf4j
 @Service
-@ConditionalOnProperty(name = "eveng.simulation-mode", havingValue = "false", matchIfMissing = true)
 public class EveNgRestService implements EveNgService {
 
     private final WebClient webClient;
@@ -293,6 +296,144 @@ public class EveNgRestService implements EveNgService {
         } catch (WebClientResponseException ex) {
             throw new EveNgIntegrationException(
                     "Get console info failed: HTTP " + ex.getStatusCode(), ex);
+        }
+    }
+
+    // ── Lab Discovery ────────────────────────────────────────────────────────
+
+    @Override
+    public List<EveNgLabInfo> getAllLabs() {
+        log.info("Fetching all labs from EVE-NG");
+        String cookie = authenticate();
+        try {
+            JsonNode response = webClient.get()
+                    .uri("/api/labs")
+                    .header("Cookie", cookie)
+                    .retrieve()
+                    .bodyToMono(JsonNode.class)
+                    .timeout(Duration.ofSeconds(15))
+                    .block();
+
+            if (response == null || !response.has("data")) {
+                log.warn("No lab data found in EVE-NG response");
+                return Collections.emptyList();
+            }
+
+            List<EveNgLabInfo> labs = new ArrayList<>();
+            response.get("data").fields().forEachRemaining(entry -> {
+                JsonNode labNode = entry.getValue();
+                try {
+                    EveNgLabInfo lab = new EveNgLabInfo(
+                            labNode.path("id").asText(),
+                            labNode.path("name").asText(),
+                            labNode.path("path").asText(),
+                            labNode.path("description").asText(),
+                            labNode.path("version").asText(),
+                            labNode.path("created").asLong(0L),
+                            labNode.path("modified").asLong(0L),
+                            labNode.path("status").asInt(0),
+                            labNode.path("nodecount").asInt(0)
+                    );
+                    labs.add(lab);
+                } catch (Exception ex) {
+                    log.warn("Failed to parse lab entry: {}", ex.getMessage());
+                }
+            });
+
+            log.info("Retrieved {} labs from EVE-NG", labs.size());
+            return labs;
+        } catch (WebClientResponseException ex) {
+            log.error("Failed to fetch labs: HTTP {}", ex.getStatusCode());
+            throw new EveNgIntegrationException("Failed to fetch labs: HTTP " + ex.getStatusCode(), ex);
+        }
+    }
+
+    @Override
+    public Optional<EveNgLabInfo> getLabByPath(String evengLabPath) {
+        log.debug("Fetching lab details by path: '{}'", evengLabPath);
+        String cookie = authenticate();
+        try {
+            JsonNode response = webClient.get()
+                    .uri("/api/labs{id}", evengLabPath)
+                    .header("Cookie", cookie)
+                    .retrieve()
+                    .bodyToMono(JsonNode.class)
+                    .timeout(Duration.ofSeconds(10))
+                    .block();
+
+            if (response == null || !response.has("data")) {
+                return Optional.empty();
+            }
+
+            JsonNode labNode = response.get("data");
+            EveNgLabInfo lab = new EveNgLabInfo(
+                    labNode.path("id").asText(),
+                    labNode.path("name").asText(),
+                    labNode.path("path").asText(),
+                    labNode.path("description").asText(),
+                    labNode.path("version").asText(),
+                    labNode.path("created").asLong(0L),
+                    labNode.path("modified").asLong(0L),
+                    labNode.path("status").asInt(0),
+                    labNode.path("nodecount").asInt(0)
+            );
+            return Optional.of(lab);
+        } catch (WebClientResponseException ex) {
+            if (ex.getStatusCode().value() == 404) {
+                log.debug("Lab not found: {}", evengLabPath);
+                return Optional.empty();
+            }
+            log.warn("Failed to get lab details: HTTP {}", ex.getStatusCode());
+            throw new EveNgIntegrationException(
+                    "Failed to get lab details: HTTP " + ex.getStatusCode(), ex);
+        }
+    }
+
+    @Override
+    public List<EveNgNodeInfo> getLabNodes(String evengLabId) {
+        log.debug("Fetching nodes for lab: '{}'", evengLabId);
+        String cookie = authenticate();
+        try {
+            JsonNode response = webClient.get()
+                    .uri("/api/labs{id}/nodes", evengLabId)
+                    .header("Cookie", cookie)
+                    .retrieve()
+                    .bodyToMono(JsonNode.class)
+                    .timeout(Duration.ofSeconds(15))
+                    .block();
+
+            if (response == null || !response.has("data")) {
+                return Collections.emptyList();
+            }
+
+            List<EveNgNodeInfo> nodes = new ArrayList<>();
+            response.get("data").fields().forEachRemaining(entry -> {
+                JsonNode nodeData = entry.getValue();
+                try {
+                    EveNgNodeInfo node = new EveNgNodeInfo(
+                            nodeData.path("id").asText(),
+                            nodeData.path("name").asText(),
+                            nodeData.path("type").asText(),
+                            nodeData.path("status").asInt(0),
+                            nodeData.path("cpu").asInt(1),
+                            nodeData.path("ram").asInt(256),
+                            nodeData.path("nvram").asInt(0),
+                            nodeData.path("disk").asInt(0),
+                            nodeData.path("image").asText(),
+                            nodeData.path("console").asText("telnet")
+                    );
+                    nodes.add(node);
+                } catch (Exception ex) {
+                    log.warn("Failed to parse node entry: {}", ex.getMessage());
+                }
+            });
+
+            log.debug("Retrieved {} nodes for lab '{}'", nodes.size(), evengLabId);
+            return nodes;
+        } catch (WebClientResponseException ex) {
+            log.warn("Failed to get nodes for lab '{}': HTTP {}", evengLabId, ex.getStatusCode());
+            throw new EveNgIntegrationException(
+                    "Failed to get lab nodes: HTTP " + ex.getStatusCode(), ex);
         }
     }
 
