@@ -31,7 +31,7 @@ public interface LabUseCase {
     List<LabResponse> getAllLabs();
 
     /** Get console connection details for a specific node (FR-LM-09). */
-    EveNgNodeConsoleInfo getNodeConsoleInfo(UUID labId, String nodeId, UUID requesterId);
+    EveNgNodeConsoleInfo getNodeConsoleInfo(UUID labId, String nodeId, UUID requesterId, boolean isAdmin);
 
     /**
      * Discover and sync labs from EVE-NG server to local database.

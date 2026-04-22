@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-19T01:30:16+0100",
+    date = "2026-04-20T14:56:38+0100",
     comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 25.0.2 (Oracle Corporation)"
 )
 @Component
@@ -94,24 +94,24 @@ public class LabMapperImpl implements LabMapper {
 
         LabJpaEntity.LabJpaEntityBuilder labJpaEntity = LabJpaEntity.builder();
 
-        labJpaEntity.id( lab.getId() );
-        labJpaEntity.name( lab.getName() );
+        labJpaEntity.cpuAllocated( lab.getCpuAllocated() );
+        labJpaEntity.createdAt( lab.getCreatedAt() );
         labJpaEntity.description( lab.getDescription() );
-        labJpaEntity.status( lab.getStatus() );
-        labJpaEntity.ownerId( lab.getOwnerId() );
-        labJpaEntity.templateId( lab.getTemplateId() );
         labJpaEntity.evengLabId( lab.getEvengLabId() );
         labJpaEntity.evengNodeId( lab.getEvengNodeId() );
-        labJpaEntity.cpuAllocated( lab.getCpuAllocated() );
-        labJpaEntity.ramAllocated( lab.getRamAllocated() );
-        labJpaEntity.storageAllocated( lab.getStorageAllocated() );
-        labJpaEntity.startedAt( lab.getStartedAt() );
-        labJpaEntity.stoppedAt( lab.getStoppedAt() );
-        labJpaEntity.lastActiveAt( lab.getLastActiveAt() );
-        labJpaEntity.createdAt( lab.getCreatedAt() );
-        labJpaEntity.updatedAt( lab.getUpdatedAt() );
-        labJpaEntity.syncedFromEveNg( lab.isSyncedFromEveNg() );
         labJpaEntity.externalMetadata( lab.getExternalMetadata() );
+        labJpaEntity.id( lab.getId() );
+        labJpaEntity.lastActiveAt( lab.getLastActiveAt() );
+        labJpaEntity.name( lab.getName() );
+        labJpaEntity.ownerId( lab.getOwnerId() );
+        labJpaEntity.ramAllocated( lab.getRamAllocated() );
+        labJpaEntity.startedAt( lab.getStartedAt() );
+        labJpaEntity.status( lab.getStatus() );
+        labJpaEntity.stoppedAt( lab.getStoppedAt() );
+        labJpaEntity.storageAllocated( lab.getStorageAllocated() );
+        labJpaEntity.syncedFromEveNg( lab.isSyncedFromEveNg() );
+        labJpaEntity.templateId( lab.getTemplateId() );
+        labJpaEntity.updatedAt( lab.getUpdatedAt() );
 
         return labJpaEntity.build();
     }

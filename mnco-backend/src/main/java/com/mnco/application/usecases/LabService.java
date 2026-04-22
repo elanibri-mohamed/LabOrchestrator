@@ -260,8 +260,8 @@ public class LabService implements LabUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public EveNgNodeConsoleInfo getNodeConsoleInfo(UUID labId, String nodeId, UUID requesterId) {
-        Lab lab = findLabAndCheckOwnership(labId, requesterId);
+    public EveNgNodeConsoleInfo getNodeConsoleInfo(UUID labId, String nodeId, UUID requesterId, boolean isAdmin) {
+        Lab lab = findLabAndCheckAccess(labId, requesterId, isAdmin);
         if (!lab.isRunning()) {
             throw new InvalidLabStateException(
                     "Lab must be RUNNING to access node console (current: " + lab.getStatus() + ")");

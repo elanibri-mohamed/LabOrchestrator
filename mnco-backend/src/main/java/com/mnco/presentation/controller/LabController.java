@@ -93,14 +93,14 @@ public class LabController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/nodes/{nodeId}/console")
-    public ResponseEntity<ApiResponse<EveNgNodeConsoleInfo>> getNodeConsole(
-            @PathVariable UUID id,
-            @PathVariable String nodeId,
-            @AuthenticationPrincipal MncoUserDetails principal) {
-        return ResponseEntity.ok(ApiResponse.success(
-                labUseCase.getNodeConsoleInfo(id, nodeId, principal.getUserId())));
-    }
+     @GetMapping("/{id}/nodes/{nodeId}/console")
+     public ResponseEntity<ApiResponse<EveNgNodeConsoleInfo>> getNodeConsole(
+             @PathVariable UUID id,
+             @PathVariable String nodeId,
+             @AuthenticationPrincipal MncoUserDetails principal) {
+         return ResponseEntity.ok(ApiResponse.success(
+                 labUseCase.getNodeConsoleInfo(id, nodeId, principal.getUserId(), principal.isAdmin())));
+     }
 
     @GetMapping("/admin/all")
     @PreAuthorize("hasRole('ADMIN')")

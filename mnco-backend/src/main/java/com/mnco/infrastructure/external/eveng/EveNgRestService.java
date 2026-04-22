@@ -287,30 +287,61 @@ public class EveNgRestService implements EveNgService {
 
             JsonNode data = response.get("data");
             String nodeType = data.path("type").asText("iol");
-            int consolePort = data.path("console").asInt(0);
+            String consoleType = data.path("console").asText("telnet");  // "telnet", "vnc", "spice", "none"
             String nodeName  = data.path("name").asText("node-" + nodeId);
             int statusCode   = data.path("status").asInt(0);
             String status    = statusCode == 2 ? "RUNNING" : "STOPPED";
 
-            // EVE-NG assigns Telnet ports in the 32xxx range; VNC in 5900+node offset
-            String protocol;
+            // Extract port from the 'url' field: "telnet://127.0.0.1:32769" or "vnc://127.0.0.1:5901"
+            String url = data.path("url").asText("");
+            int port = extractPortFromUrl(url);
+
+            // Determine protocol from console type field
+            String protocol = consoleType.toUpperCase();
+            if (!protocol.equals("TELNET") && !protocol.equals("VNC") && !protocol.equals("SPICE")) {
+                protocol = "TELNET";  // default fallback
+            }
+
+            // Build WebSocket URL for browser-based console access
             String wsUrl = null;
-            if (nodeType.contains("qemu") || nodeType.contains("docker")) {
-                protocol = "VNC";
-            } else {
-                protocol = "TELNET";
+            if (protocol.equals("TELNET") || protocol.equals("SPICE")) {
                 wsUrl = String.format("ws://%s:8080/api/labs%s/nodes/%s/console",
                         evengHost, evengLabId, nodeId);
             }
+            // VNC typically uses direct TCP, not WebSocket proxy (handle separately if needed)
 
             return new EveNgNodeConsoleInfo(
-                    protocol, evengHost, consolePort, wsUrl,
+                    protocol, evengHost, port, wsUrl,
                     nodeId, nodeName, status);
 
         } catch (WebClientResponseException ex) {
             throw new EveNgIntegrationException(
                     "Get console info failed: HTTP " + ex.getStatusCode(), ex);
         }
+    }
+
+    /**
+     * Extract port number from EVE-NG console URL.
+     * Handles formats: telnet://127.0.0.1:32769, vnc://127.0.0.1:5901
+     */
+    private int extractPortFromUrl(String url) {
+        if (url == null || url.isEmpty()) return 0;
+        try {
+            // URL format: protocol://host:port
+            String[] parts = url.split(":");
+            if (parts.length >= 3) {
+                String portPart = parts[2];
+                // Remove any trailing slashes or paths
+                int slashIndex = portPart.indexOf('/');
+                if (slashIndex != -1) {
+                    portPart = portPart.substring(0, slashIndex);
+                }
+                return Integer.parseInt(portPart);
+            }
+        } catch (Exception e) {
+            log.debug("Failed to extract port from URL '{}': {}", url, e.getMessage());
+        }
+        return 0;
     }
 
     // ── Lab Discovery ────────────────────────────────────────────────────────
