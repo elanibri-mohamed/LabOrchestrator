@@ -1,11 +1,10 @@
 package com.mnco.presentation.controller;
 
+import com.mnco.application.dto.request.AssignTeacherRequest;
 import com.mnco.application.dto.request.UpdateQuotaRequest;
-import com.mnco.application.dto.response.ApiResponse;
-import com.mnco.application.dto.response.QuotaResponse;
-import com.mnco.application.dto.response.UserResponse;
+import com.mnco.application.dto.response.*;
 import com.mnco.application.mapper.UserMapper;
-import com.mnco.domain.entities.ResourceQuota;
+import com.mnco.application.usecases.MultiTenantLabService;
 import com.mnco.domain.entities.UserRole;
 import com.mnco.domain.repository.ResourceQuotaRepository;
 import com.mnco.domain.repository.UserRepository;
@@ -31,6 +30,9 @@ public class AdminController {
     private final UserRepository userRepository;
     private final ResourceQuotaRepository quotaRepository;
     private final UserMapper userMapper;
+    private final MultiTenantLabService multiTenantLabService;
+
+    // ── User management ────────────────────────────────────────────────────────
 
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<List<UserResponse>>> listAllUsers() {
@@ -90,6 +92,34 @@ public class AdminController {
         quota.setMaxStorageGb(request.maxStorageGb());
         return ResponseEntity.ok(ApiResponse.success("Quota updated",
                 toQuotaResponse(quotaRepository.save(quota))));
+    }
+
+    // ── EVE-NG Template Sync & Assignment (Multi-Tenant) ──────────────────────
+
+    /**
+     * Sync lab templates from EVE-NG server.
+     * Creates new template records, updates existing, soft-deletes removed ones.
+     */
+    @PostMapping("/labs/sync")
+    public ResponseEntity<ApiResponse<SyncResultResponse>> syncTemplates(
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        log.info("ADMIN: triggering EVE-NG template sync by admin={}", principal.getUserId());
+        SyncResultResponse result = multiTenantLabService.syncTemplates(principal.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("Sync completed", result));
+    }
+
+    /**
+     * Assign an EVE-NG template to a teacher (INSTRUCTOR).
+     * Only ADMIN can perform this.
+     */
+    @PostMapping("/labs/{templateId}/assign/teacher")
+    public ResponseEntity<ApiResponse<Void>> assignTeacher(
+            @PathVariable UUID templateId,
+            @Valid @RequestBody AssignTeacherRequest request,
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        log.info("ADMIN: assigning template {} to teacher {} by admin {}", templateId, request.teacherId(), principal.getUserId());
+        multiTenantLabService.assignToTeacher(templateId, request.teacherId(), principal.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("Teacher assigned successfully"));
     }
 
     private QuotaResponse toQuotaResponse(ResourceQuota q) {

@@ -44,6 +44,22 @@ public class User {
         return UserRole.INSTRUCTOR.equals(this.role);
     }
 
+    /**
+     * TEACHER role is equivalent to INSTRUCTOR in our domain.
+     * Reference architecture uses TEACHER; our implementation maps INSTRUCTOR → TEACHER.
+     */
+    public boolean isTeacher() {
+        return UserRole.INSTRUCTOR.equals(this.role);
+    }
+
+    /**
+     * Student-level roles: STUDENT and RESEARCHER.
+     * They have limited privileges: can start/stop own instances only.
+     */
+    public boolean isStudent() {
+        return UserRole.STUDENT.equals(this.role) || UserRole.RESEARCHER.equals(this.role);
+    }
+
     public boolean canManageTemplates() {
         return UserRole.ADMIN.equals(this.role) || UserRole.INSTRUCTOR.equals(this.role);
     }
