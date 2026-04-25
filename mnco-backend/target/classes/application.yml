@@ -55,7 +55,7 @@ jwt:
 
 # EVE-NG Integration
 eveng:
-  base-url: ${EVENG_BASE_URL:http://192.168.100.10}
+  base-url: ${EVENG_BASE_URL:http://10.10.30.10}
   username: ${EVENG_USERNAME:admin}
   password: ${EVENG_PASSWORD:eve}
   api-path: /api
