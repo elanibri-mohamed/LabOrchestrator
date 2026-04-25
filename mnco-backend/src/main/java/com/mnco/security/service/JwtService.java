@@ -28,6 +28,9 @@ public class JwtService {
     @Value("${jwt.expiration-ms}")
     private long expirationMs;
 
+    @Value("${jwt.refresh-expiration-ms}")
+    private long refreshExpirationMs;
+
     private SecretKey signingKey;
 
     @PostConstruct
@@ -38,7 +41,7 @@ public class JwtService {
             throw new IllegalStateException("JWT secret must be at least 256 bits (32 bytes)");
         }
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
-        log.info("JWT service initialized with expiration={}ms", expirationMs);
+        log.info("JWT service initialized: accessExpiry={}ms, refreshExpiry={}ms", expirationMs, refreshExpirationMs);
     }
 
     /**
@@ -49,8 +52,16 @@ public class JwtService {
      * @return signed JWT string
      */
     public String generateToken(String username, String role) {
+        return generate(username, role, expirationMs);
+    }
+
+    public String generateRefreshToken(String username, String role) {
+        return generate(username, role, refreshExpirationMs);
+    }
+
+    private String generate(String username, String role, long expiryMs) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + expirationMs);
+        Date expiry = new Date(now.getTime() + expiryMs);
 
         return Jwts.builder()
                 .subject(username)
@@ -61,7 +72,7 @@ public class JwtService {
                 .compact();
     }
 
-    /**
+    /** teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
      * Extracts the username (subject) from a JWT token.
      *
      * @param token the raw JWT string (without "Bearer " prefix)
@@ -99,6 +110,10 @@ public class JwtService {
      */
     public long getExpirationMs() {
         return expirationMs;
+    }
+
+    public long getRefreshExpirationMs() {
+        return refreshExpirationMs;
     }
 
     // ── Private ───────────────────────────────────────────────────────────────

@@ -1,0 +1,109 @@
+.users-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.user-card {
+  padding: 16px !important;
+}
+
+.user-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  background: #e7f3ff;
+  color: #1877f2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.user-info-main {
+  flex-grow: 1;
+}
+
+.user-info-main h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #1c1e21;
+}
+
+.user-email {
+  font-size: 0.85rem;
+  color: #65676b;
+}
+
+.role-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.role-badge.admin { background: #ffebe9; color: #fa3e3e; }
+.role-badge.student { background: #e7f3ff; color: #1877f2; }
+.role-badge.instructor { background: #e7f8ed; color: #31a24c; }
+
+.user-stats-compact {
+  display: flex;
+  background: #f0f2f5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.user-stats-compact .stat {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.85rem;
+}
+
+.user-actions-row {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn-sm {
+  flex: 1;
+  background: #e4e6eb;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #050505;
+  cursor: pointer;
+}
+
+.action-btn-sm:hover {
+  background: #d8dadf;
+}
+
+.action-btn-sm.danger:hover { background: #ffebe9; color: #fa3e3e; }
+.action-btn-sm.success:hover { background: #e7f8ed; color: #31a24c; }
+
+.text-success { color: #31a24c; }
+.text-danger { color: #fa3e3e; }
+
+.btn-primary-sm {
+  background: #1877f2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
