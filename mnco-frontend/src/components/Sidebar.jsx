@@ -7,6 +7,8 @@ import './Sidebar.css';
 const Sidebar = () => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
+  const isTeacher = user?.role === 'TEACHER';
+  const canManageTemplates = isAdmin || isTeacher;
 
   return (
     <aside className="sidebar">
@@ -15,10 +17,12 @@ const Sidebar = () => {
           <FlaskConical size={24} color="#1877F2" />
           <span>My Labs</span>
         </NavLink>
-        <NavLink to="/templates" className="sidebar-link">
-          <Box size={24} color="#F7B928" />
-          <span>Lab Templates</span>
-        </NavLink>
+        {canManageTemplates && (
+          <NavLink to="/templates" className="sidebar-link">
+            <Box size={24} color="#F7B928" />
+            <span>Lab Templates</span>
+          </NavLink>
+        )}
       </div>
 
       <hr className="sidebar-divider" />

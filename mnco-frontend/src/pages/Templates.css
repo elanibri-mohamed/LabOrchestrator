@@ -94,27 +94,156 @@
   background: #166fe5;
 }
 
-.page-header {
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-sync {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #42b72a;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-sync:hover {
+  background: #36a420;
+}
+
+.btn-sync:disabled {
+  background: #a5d6a7;
+  cursor: not-allowed;
+}
+
+.btn-assign {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1877f2;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.template-stats-mini {
+  display: flex;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: #65676b;
+  margin-top: 8px;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 16px;
+  border-bottom: 1px solid #dddfe2;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  margin-bottom: 16px;
 }
 
-.search-bar-inline {
-  display: flex;
-  align-items: center;
-  background: #f0f2f5;
-  padding: 8px 16px;
-  border-radius: 20px;
-  width: 300px;
-}
+.modal-header h3 { margin: 0; }
 
-.search-bar-inline input {
+.close-btn {
   background: transparent;
   border: none;
-  outline: none;
-  margin-left: 8px;
-  width: 100%;
+  cursor: pointer;
+  color: #65676b;
+}
+
+.modal-body {
+  padding: 16px;
+}
+
+.form-group {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-select {
+  padding: 10px;
+  border: 1px solid #dddfe2;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.modal-footer {
+  padding: 16px;
+  border-top: 1px solid #dddfe2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-secondary {
+  background: #e4e6eb;
+  color: #4b4f56;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #1877f2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  background: #e7f3ff;
+  color: #1877f2;
+  cursor: not-allowed;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

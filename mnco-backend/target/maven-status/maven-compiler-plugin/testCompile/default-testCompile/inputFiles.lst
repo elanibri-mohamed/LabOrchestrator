@@ -1,7 +1,0 @@
-/home/mnco/mnco/LabOrchestrator/mnco-backend/src/test/java/com/mnco/security/JwtServiceTest.java
-/home/mnco/mnco/LabOrchestrator/mnco-backend/src/test/java/com/mnco/application/usecases/AuthServiceTest.java
-/home/mnco/mnco/LabOrchestrator/mnco-backend/src/test/java/com/mnco/BaseIntegrationTest.java
-/home/mnco/mnco/LabOrchestrator/mnco-backend/src/test/java/com/mnco/presentation/controller/LabControllerIT.java
-/home/mnco/mnco/LabOrchestrator/mnco-backend/src/test/java/com/mnco/presentation/controller/AuthControllerIT.java
-/home/mnco/mnco/LabOrchestrator/mnco-backend/src/test/java/com/mnco/domain/entities/ResourceQuotaTest.java
-/home/mnco/mnco/LabOrchestrator/mnco-backend/src/test/java/com/mnco/application/usecases/LabServiceTest.java

@@ -1,5 +1,6 @@
 package com.mnco.infrastructure.persistence.entity;
 
+import com.mnco.domain.entities.LabTemplateStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,6 +9,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * JPA persistence entity for the 'lab_templates' table.
+ * Represents master topologies synced from EVE-NG.
+ */
 @Entity
 @Table(name = "lab_templates")
 @Getter
@@ -22,23 +27,30 @@ public class LabTemplateJpaEntity {
     @Column(updatable = false, nullable = false)
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(nullable = false, length = 128)
     private String name;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "topology_yaml", columnDefinition = "TEXT")
-    private String topologyYaml;
+    @Column(name = "eve_template_path", nullable = false, unique = true, length = 512)
+    private String eveTemplatePath;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String version;
+    private LabTemplateStatus status;
 
-    @Column(name = "author_id")
-    private UUID authorId;
+    @Column(name = "cpu_allocated", nullable = false)
+    private int cpuAllocated;
 
-    @Column(name = "is_public", nullable = false)
-    private boolean isPublic = true;
+    @Column(name = "ram_allocated", nullable = false)
+    private int ramAllocated;
+
+    @Column(name = "storage_allocated", nullable = false)
+    private int storageAllocated;
+
+    @Column(name = "last_synced_at", nullable = false)
+    private Instant lastSyncedAt;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

@@ -114,7 +114,7 @@ public class ApiDocController {
                 returns("template detail")),
 
             endpoint("POST", "/templates",
-                "Create a new lab template", true, new String[]{"INSTRUCTOR", "ADMIN"},
+                "Create a new lab template", true, new String[]{"TEACHER", "ADMIN"},
                 body("name",         "string"),
                 body("description",  "string"),
                 body("topologyYaml", "string — EVE-NG topology definition"),
@@ -123,7 +123,7 @@ public class ApiDocController {
                 returns("created template object")),
 
             endpoint("DELETE", "/templates/{id}",
-                "Delete a template (author or ADMIN only)", true, new String[]{"INSTRUCTOR", "ADMIN"},
+                "Delete a template (author or ADMIN only)", true, new String[]{"TEACHER", "ADMIN"},
                 returns("success message")),
 
             // ── Quota ────────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ public class ApiDocController {
                 returns("user object")),
 
             endpoint("PATCH", "/admin/users/{id}/role",
-                "Change a user's role — query param: role=ADMIN|INSTRUCTOR|STUDENT|RESEARCHER",
+                "Change a user's role — query param: role=ADMIN|TEACHER|STUDENT",
                 true, new String[]{"ADMIN"},
                 returns("updated user object")),
 

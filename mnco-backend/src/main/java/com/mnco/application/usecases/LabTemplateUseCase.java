@@ -1,20 +1,21 @@
 package com.mnco.application.usecases;
 
-import com.mnco.application.dto.request.CreateLabTemplateRequest;
-import com.mnco.application.dto.response.LabTemplateResponse;
-
+import com.mnco.application.dto.response.LabResponse;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Port for Lab Template management (sync, list).
+ */
 public interface LabTemplateUseCase {
 
-    LabTemplateResponse createTemplate(CreateLabTemplateRequest request, UUID authorId);
+    List<LabResponse> getAllTemplates();
 
-    List<LabTemplateResponse> getPublicTemplates();
+    LabResponse getTemplateById(UUID id);
 
-    List<LabTemplateResponse> getMyTemplates(UUID authorId);
-
-    LabTemplateResponse getTemplateById(UUID id);
-
-    void deleteTemplate(UUID id, UUID requesterId, boolean isAdmin);
+    /**
+     * Discover and sync labs from EVE-NG server templates directory.
+     * @return list of synced templates
+     */
+    List<LabResponse> discoverTemplatesFromEveNg();
 }

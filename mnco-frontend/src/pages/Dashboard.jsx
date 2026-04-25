@@ -13,7 +13,7 @@ const Dashboard = () => {
 
   const fetchLabs = async () => {
     try {
-      const response = await api.get('/labs');
+      const response = await api.get('/instances/my');
       setLabs(Array.isArray(response.data) ? response.data : response.data.data || []);
     } catch (error) {
       console.error('Error fetching labs', error);
@@ -22,23 +22,23 @@ const Dashboard = () => {
     }
   };
 
-  const fetchNodes = async (labId) => {
+  const fetchNodes = async (templateId) => {
     try {
-      const response = await api.get(`/labs/${labId}/nodes`);
+      const response = await api.get(`/instances/template/${templateId}/nodes`);
       const nodesData = response.data.data || response.data;
-      setLabNodes(prev => ({ ...prev, [labId]: nodesData }));
+      setLabNodes(prev => ({ ...prev, [templateId]: nodesData }));
     } catch (error) {
       console.error('Error fetching nodes', error);
     }
   };
 
-  const toggleNodes = (labId) => {
-    if (expandedLab === labId) {
+  const toggleNodes = (templateId) => {
+    if (expandedLab === templateId) {
       setExpandedLab(null);
     } else {
-      setExpandedLab(labId);
-      if (!labNodes[labId]) {
-        fetchNodes(labId);
+      setExpandedLab(templateId);
+      if (!labNodes[templateId]) {
+        fetchNodes(templateId);
       }
     }
   };
@@ -49,22 +49,33 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleStart = async (id) => {
+  const handleStart = async (templateId) => {
     try {
-      await api.post(`/labs/${id}/start`);
+      await api.post(`/instances/template/${templateId}/start`);
       fetchLabs();
     } catch (error) {
       alert('Failed to start lab: ' + (error.response?.data?.message || error.message));
     }
   };
 
-  const handleStop = async (id) => {
+  const handleStop = async (templateId) => {
     try {
-      await api.post(`/labs/${id}/stop`);
+      await api.post(`/instances/template/${templateId}/stop`);
       setExpandedLab(null); // Close nodes view on stop
       fetchLabs();
     } catch (error) {
       alert('Failed to stop lab: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleReset = async (templateId) => {
+    if (!window.confirm("Are you sure? This will wipe all node configurations and reset the lab to its original state.")) return;
+    try {
+      await api.post(`/instances/template/${templateId}/reset`);
+      setExpandedLab(null);
+      fetchLabs();
+    } catch (error) {
+      alert('Failed to reset lab: ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -105,26 +116,29 @@ const Dashboard = () => {
                     <div className="lab-actions">
                       {lab.status === 'RUNNING' ? (
                         <>
-                          <button className="action-btn-main stop" onClick={() => handleStop(lab.id)}>
+                          <button className="action-btn-main stop" onClick={() => handleStop(lab.templateId)}>
                             <Square size={18} fill="currentColor" /> Stop
                           </button>
-                          <button className="action-btn-main secondary" onClick={() => toggleNodes(lab.id)}>
-                            {expandedLab === lab.id ? <ChevronUp size={18} /> : <ChevronDown size={18} />} 
-                            {expandedLab === lab.id ? 'Hide Nodes' : 'View Nodes'}
+                          <button className="action-btn-main secondary" onClick={() => toggleNodes(lab.templateId)}>
+                            {expandedLab === lab.templateId ? <ChevronUp size={18} /> : <ChevronDown size={18} />} 
+                            {expandedLab === lab.templateId ? 'Hide Nodes' : 'View Nodes'}
+                          </button>
+                          <button className="action-btn-main outline" onClick={() => handleReset(lab.templateId)}>
+                             Reset
                           </button>
                         </>
                       ) : (
-                        <button className="action-btn-main start" onClick={() => handleStart(lab.id)}>
+                        <button className="action-btn-main start" onClick={() => handleStart(lab.templateId)}>
                           <Play size={18} fill="currentColor" /> Start
                         </button>
                       )}
                     </div>
 
-                    {expandedLab === lab.id && labNodes[lab.id] && (
+                    {expandedLab === lab.templateId && labNodes[lab.templateId] && (
                       <div className="nodes-section fade-in">
                         <h4 className="nodes-title"><Monitor size={16} /> Lab Nodes</h4>
                         <div className="nodes-list">
-                          {Object.values(labNodes[lab.id]).map(node => (
+                          {Object.values(labNodes[lab.templateId]).map(node => (
                             <div key={node.id} className="node-item">
                               <div className="node-info">
                                 <span className="node-name">{node.name}</span>

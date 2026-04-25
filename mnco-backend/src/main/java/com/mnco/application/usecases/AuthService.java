@@ -14,6 +14,7 @@ import com.mnco.exception.custom.DuplicateResourceException;
 import com.mnco.exception.custom.InvalidCredentialsException;
 import com.mnco.exception.custom.ResourceNotFoundException;
 import com.mnco.security.service.JwtService;
+import com.mnco.infrastructure.external.eveng.EveNgService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,7 @@ public class AuthService implements AuthUseCase {
     private final JwtService jwtService;
     private final UserMapper userMapper;
     private final AuditLogService auditLogService;
+    private final EveNgService eveNgService;
 
     @Override
     @Transactional
@@ -65,6 +67,13 @@ public class AuthService implements AuthUseCase {
 
         User saved = userRepository.save(user);
         log.info("User registered: id={}, username='{}'", saved.getId(), saved.getUsername());
+
+        // Sync to EVE-NG
+        try {
+            eveNgService.createUser(saved.getUsername(), request.password(), saved.getRole().name());
+        } catch (Exception e) {
+            log.warn("EVE-NG user sync failed during registration: {}", e.getMessage());
+        }
 
         String token = jwtService.generateToken(saved.getUsername(), saved.getRole().name());
         return AuthResponse.of(token, jwtService.getExpirationMs(),
@@ -98,6 +107,13 @@ public class AuthService implements AuthUseCase {
 
         log.info("User authenticated: id={}, username='{}'", user.getId(), user.getUsername());
         auditLogService.logLogin(user.getId(), user.getUsername(), ip, ua);
+
+        // Ensure user exists in EVE-NG (Lazy Sync)
+        try {
+            eveNgService.createUser(user.getUsername(), request.password(), user.getRole().name());
+        } catch (Exception e) {
+            log.warn("EVE-NG user sync failed during login: {}", e.getMessage());
+        }
 
         String token = jwtService.generateToken(user.getUsername(), user.getRole().name());
         return AuthResponse.of(token, jwtService.getExpirationMs(),

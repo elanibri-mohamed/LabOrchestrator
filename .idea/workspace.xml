@@ -7,19 +7,99 @@
     <list default="true" id="8427b441-2d04-4267-a4f7-3c847f3c790d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/mnco-backend.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/mnco-backend.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/LabService.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/LabService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/LabUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/LabUseCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/dto/request/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/dto/request/RegisterRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/mapper/LabMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/mapper/LabTemplateMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/mapper/LabTemplateMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/LabService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/LabTemplateService.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/LabTemplateService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/LabTemplateUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/LabTemplateUseCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/application/usecases/LabUseCase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/config/LabIdleStopScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/config/LabIdleStopScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/config/LabSyncScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/config/LabSyncScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/domain/entities/Lab.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/domain/entities/LabTemplate.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/domain/entities/LabTemplate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/domain/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/domain/entities/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/domain/entities/UserRole.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/domain/entities/UserRole.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/domain/repository/LabRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/domain/repository/LabTemplateRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/domain/repository/LabTemplateRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/external/eveng/EveNgRestService.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/external/eveng/EveNgRestService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/external/eveng/EveNgService.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/external/eveng/EveNgService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/external/eveng/EveNgSimulatedService.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/external/eveng/EveNgSimulatedService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/presentation/controller/LabController.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/presentation/controller/LabController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/LabService.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/LabService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/LabUseCase.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/LabUseCase.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/persistence/LabRepositoryAdapter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/persistence/LabTemplateRepositoryAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/persistence/LabTemplateRepositoryAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/persistence/entity/LabJpaEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/persistence/entity/LabTemplateJpaEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/persistence/entity/LabTemplateJpaEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/persistence/repository/LabJpaRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/persistence/repository/LabTemplateJpaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/infrastructure/persistence/repository/LabTemplateJpaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/presentation/controller/ApiDocController.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/presentation/controller/ApiDocController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/presentation/controller/LabController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/presentation/controller/LabTemplateController.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/main/java/com/mnco/presentation/controller/LabTemplateController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/src/test/java/com/mnco/application/usecases/LabServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/src/test/java/com/mnco/application/usecases/LabServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/dto/request/RegisterRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/dto/request/RegisterRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/mapper/LabMapper.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/mapper/LabMapperImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/mapper/LabTemplateMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/mapper/LabTemplateMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/mapper/LabTemplateMapperImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/mapper/LabTemplateMapperImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/AuthService.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/AuthService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/AuthUseCase.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/AuthUseCase.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/LabService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/LabTemplateService.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/LabTemplateService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/LabTemplateUseCase.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/LabTemplateUseCase.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/application/usecases/LabUseCase.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/config/LabIdleStopScheduler.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/config/LabIdleStopScheduler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/config/LabSyncScheduler.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/config/LabSyncScheduler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/domain/entities/Lab$Builder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/domain/entities/Lab.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/domain/entities/LabTemplate.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/domain/entities/LabTemplate.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/domain/entities/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/domain/entities/User.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/domain/entities/UserRole.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/domain/entities/UserRole.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/domain/repository/LabRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/domain/repository/LabTemplateRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/domain/repository/LabTemplateRepository.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/external/eveng/EveNgRestService.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/external/eveng/EveNgRestService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/external/eveng/EveNgService.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/external/eveng/EveNgService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/external/eveng/EveNgSimulatedService.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/external/eveng/EveNgSimulatedService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/presentation/controller/LabController.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/presentation/controller/LabController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/security/service/JwtService.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/security/service/JwtService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/LabRepositoryAdapter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/LabTemplateRepositoryAdapter.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/LabTemplateRepositoryAdapter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/entity/LabJpaEntity$LabJpaEntityBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/entity/LabJpaEntity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/entity/LabTemplateJpaEntity$LabTemplateJpaEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/entity/LabTemplateJpaEntity$LabTemplateJpaEntityBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/entity/LabTemplateJpaEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/entity/LabTemplateJpaEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/repository/LabJpaRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/repository/LabTemplateJpaRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/infrastructure/persistence/repository/LabTemplateJpaRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/presentation/controller/ApiDocController.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/presentation/controller/ApiDocController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/presentation/controller/AuthController.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/presentation/controller/AuthController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/presentation/controller/LabController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/presentation/controller/LabTemplateController.class" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/classes/com/mnco/presentation/controller/LabTemplateController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/generated-sources/annotations/com/mnco/application/mapper/LabMapperImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/generated-sources/annotations/com/mnco/application/mapper/LabTemplateMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/generated-sources/annotations/com/mnco/application/mapper/LabTemplateMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/generated-sources/annotations/com/mnco/application/mapper/ResourceQuotaMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/generated-sources/annotations/com/mnco/application/mapper/ResourceQuotaMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/generated-sources/annotations/com/mnco/application/mapper/UserMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-backend/target/generated-sources/annotations/com/mnco/application/mapper/UserMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/maven-archiver/pom.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/mnco-backend-1.0.0-SNAPSHOT.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/mnco-backend-1.0.0-SNAPSHOT.jar.original" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/BaseIntegrationTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/application/usecases/AuthServiceTest$Login.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/application/usecases/AuthServiceTest$Register.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/application/usecases/AuthServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/application/usecases/LabServiceTest$CreateLab.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/application/usecases/LabServiceTest$DeleteLab.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/application/usecases/LabServiceTest$GetLabsByOwner.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/application/usecases/LabServiceTest$StartLab.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/application/usecases/LabServiceTest$StopLab.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/application/usecases/LabServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/domain/entities/ResourceQuotaTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/presentation/controller/AuthControllerIT.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/presentation/controller/LabControllerIT.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-backend/target/test-classes/com/mnco/security/JwtServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-frontend/src/components/Sidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-frontend/src/components/Sidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-frontend/src/pages/Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-frontend/src/pages/Dashboard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-frontend/src/pages/Templates.css" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-frontend/src/pages/Templates.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mnco-frontend/src/pages/Templates.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mnco-frontend/src/pages/Templates.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,32 +123,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.MncoApplication.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Notification.DisplayName-DoNotAsk-DatabaseConfigFileWatcher.found&quot;: &quot;New/updated database configurations found&quot;,
-    &quot;Notification.DoNotAsk-DatabaseConfigFileWatcher.found&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Spring Boot.MncoApplication.executor&quot;: &quot;Run&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/frontend-fixes&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/mnco/mnco/LabOrchestrator/mnco-backend&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.MncoApplication.executor": "Run",
+    "Maven.mnco-backend [clean].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Notification.DisplayName-DoNotAsk-DatabaseConfigFileWatcher.found": "New/updated database configurations found",
+    "Notification.DoNotAsk-DatabaseConfigFileWatcher.found": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.MncoApplication.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "feature/frontend-fixes",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/mnco/mnco/LabOrchestrator/mnco-backend",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="MncoApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="mnco-backend" />
@@ -94,7 +175,7 @@
       <workItem from="1776979745528" duration="1253000" />
       <workItem from="1776987884021" duration="5788000" />
       <workItem from="1777072608320" duration="10452000" />
-      <workItem from="1777114787406" duration="3003000" />
+      <workItem from="1777114787406" duration="10232000" />
     </task>
     <servers />
   </component>

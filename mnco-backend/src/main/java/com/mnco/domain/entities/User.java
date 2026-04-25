@@ -40,12 +40,12 @@ public class User {
         return UserRole.ADMIN.equals(this.role);
     }
 
-    public boolean isInstructor() {
-        return UserRole.INSTRUCTOR.equals(this.role);
+    public boolean isTeacher() {
+        return UserRole.TEACHER.equals(this.role);
     }
 
     public boolean canManageTemplates() {
-        return UserRole.ADMIN.equals(this.role) || UserRole.INSTRUCTOR.equals(this.role);
+        return UserRole.ADMIN.equals(this.role) || UserRole.TEACHER.equals(this.role);
     }
 
     // ── Getters & Setters ─────────────────────────────────────────────────────
