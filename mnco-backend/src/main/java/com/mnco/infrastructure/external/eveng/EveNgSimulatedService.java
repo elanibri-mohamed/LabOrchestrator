@@ -122,19 +122,35 @@ public class EveNgSimulatedService implements EveNgService {
     @Override
     public List<EveNgNodeInfo> getLabNodes(String evengLabId) {
         log.debug("[SIM] Fetching nodes for lab: '{}'", evengLabId);
-        sleep(500);
         return List.of(
                 new EveNgNodeInfo("1", "Router-1", "iol", 2, 2, 2048, 512, 0,
                         "i86bi_linux_l2-adventerprisek9-M", "telnet"),
-                new EveNgNodeInfo("2", "Router-2", "iol", 2, 2, 2048, 512, 0,
-                        "i86bi_linux_l2-adventerprisek9-M", "telnet"),
-                new EveNgNodeInfo("3", "Switch-1", "iol", 0, 1, 1024, 256, 0,
-                        "i86bi_linux_l2-adventerprisek9-M", "telnet"),
-                new EveNgNodeInfo("4", "PC-1", "vpcs", 0, 0, 256, 0, 0,
-                        "vpcs-8.2", "telnet"),
-                new EveNgNodeInfo("5", "Docker-Web", "docker", 2, 4, 4096, 1024, 20,
-                        "nginx:latest", "telnet")
+                new EveNgNodeInfo("2", "PC-1", "vpcs", 0, 0, 256, 0, 0,
+                        "vpcs-8.2", "telnet")
         );
+    }
+
+    @Override
+    public java.util.Map<String, Object> getRawLabNodes(String evengLabId) {
+        log.debug("[SIM] Fetching raw nodes for lab: '{}'", evengLabId);
+        java.util.Map<String, Object> nodes = new java.util.HashMap<>();
+        String simHost = "127.0.0.1";
+        
+        java.util.Map<String, Object> node1 = new java.util.HashMap<>();
+        node1.put("id", 1);
+        node1.put("name", "Router-1");
+        node1.put("status", 2);
+        node1.put("url", "http://" + simHost + "/html5/#/client/SIM1");
+        nodes.put("1", node1);
+
+        java.util.Map<String, Object> node2 = new java.util.HashMap<>();
+        node2.put("id", 2);
+        node2.put("name", "PC-1");
+        node2.put("status", 0);
+        node2.put("url", "http://" + simHost + "/html5/#/client/SIM2");
+        nodes.put("2", node2);
+
+        return nodes;
     }
 
     private void sleep(long ms) {

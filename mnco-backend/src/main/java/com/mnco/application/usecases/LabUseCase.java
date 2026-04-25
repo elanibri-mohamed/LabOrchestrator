@@ -41,4 +41,15 @@ public interface LabUseCase {
      * @return list of newly discovered/synced labs
      */
     List<LabResponse> discoverLabsFromEveNg();
+
+    /**
+     * Get all nodes for a lab directly from EVE-NG.
+     * Only works if lab is RUNNING.
+     *
+     * @param labId platform lab UUID
+     * @param requesterId user ID for ownership check
+     * @param isAdmin flag for admin bypass
+     * @return map of nodes from EVE-NG
+     */
+    java.util.Map<String, Object> getLabNodes(java.util.UUID labId, java.util.UUID requesterId, boolean isAdmin);
 }

@@ -2,23 +2,44 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import api from '../api/axios';
-import { Play, Square, MoreHorizontal, Plus, FlaskConical } from 'lucide-react';
+import { Play, Square, MoreHorizontal, Plus, FlaskConical, Monitor, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const [labs, setLabs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [labNodes, setLabNodes] = useState({});
+  const [expandedLab, setExpandedLab] = useState(null);
 
   const fetchLabs = async () => {
     try {
       const response = await api.get('/labs');
-      // The backend returns the list directly or wrapped? 
-      // Based on AuthController, it's likely direct or response.data
       setLabs(Array.isArray(response.data) ? response.data : response.data.data || []);
     } catch (error) {
       console.error('Error fetching labs', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchNodes = async (labId) => {
+    try {
+      const response = await api.get(`/labs/${labId}/nodes`);
+      const nodesData = response.data.data || response.data;
+      setLabNodes(prev => ({ ...prev, [labId]: nodesData }));
+    } catch (error) {
+      console.error('Error fetching nodes', error);
+    }
+  };
+
+  const toggleNodes = (labId) => {
+    if (expandedLab === labId) {
+      setExpandedLab(null);
+    } else {
+      setExpandedLab(labId);
+      if (!labNodes[labId]) {
+        fetchNodes(labId);
+      }
     }
   };
 
@@ -40,6 +61,7 @@ const Dashboard = () => {
   const handleStop = async (id) => {
     try {
       await api.post(`/labs/${id}/stop`);
+      setExpandedLab(null); // Close nodes view on stop
       fetchLabs();
     } catch (error) {
       alert('Failed to stop lab: ' + (error.response?.data?.message || error.message));
@@ -82,16 +104,49 @@ const Dashboard = () => {
 
                     <div className="lab-actions">
                       {lab.status === 'RUNNING' ? (
-                        <button className="action-btn-main stop" onClick={() => handleStop(lab.id)}>
-                          <Square size={18} fill="currentColor" /> Stop
-                        </button>
+                        <>
+                          <button className="action-btn-main stop" onClick={() => handleStop(lab.id)}>
+                            <Square size={18} fill="currentColor" /> Stop
+                          </button>
+                          <button className="action-btn-main secondary" onClick={() => toggleNodes(lab.id)}>
+                            {expandedLab === lab.id ? <ChevronUp size={18} /> : <ChevronDown size={18} />} 
+                            {expandedLab === lab.id ? 'Hide Nodes' : 'View Nodes'}
+                          </button>
+                        </>
                       ) : (
                         <button className="action-btn-main start" onClick={() => handleStart(lab.id)}>
                           <Play size={18} fill="currentColor" /> Start
                         </button>
                       )}
-                      <button className="action-btn-main secondary">Open Console</button>
                     </div>
+
+                    {expandedLab === lab.id && labNodes[lab.id] && (
+                      <div className="nodes-section fade-in">
+                        <h4 className="nodes-title"><Monitor size={16} /> Lab Nodes</h4>
+                        <div className="nodes-list">
+                          {Object.values(labNodes[lab.id]).map(node => (
+                            <div key={node.id} className="node-item">
+                              <div className="node-info">
+                                <span className="node-name">{node.name}</span>
+                                <span className={`node-status ${node.status === 2 ? 'online' : 'offline'}`}>
+                                  {node.status === 2 ? 'Running' : 'Stopped'}
+                                </span>
+                              </div>
+                              {node.url && node.status === 2 && (
+                                <a 
+                                  href={node.url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="console-link"
+                                >
+                                  <ExternalLink size={14} /> Console
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))
               )}

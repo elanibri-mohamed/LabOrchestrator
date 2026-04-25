@@ -117,4 +117,13 @@ public class LabController {
                 String.format("Lab discovery completed: %d labs synced", synced.size()),
                 synced));
     }
+
+    @GetMapping("/{id}/nodes")
+    public ResponseEntity<ApiResponse<java.util.Map<String, Object>>> getLabNodes(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        java.util.Map<String, Object> nodes = labUseCase.getLabNodes(
+                id, principal.getUserId(), principal.isAdmin());
+        return ResponseEntity.ok(ApiResponse.success(nodes));
+    }
 }

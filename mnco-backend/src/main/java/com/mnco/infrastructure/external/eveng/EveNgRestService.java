@@ -66,7 +66,7 @@ public class EveNgRestService implements EveNgService {
         try {
             var response = webClient.post()
                     .uri("/api/auth/login")
-                    .bodyValue(Map.of("username", username, "password", password, "html5", -1))
+                    .bodyValue(Map.of("username", username, "password", password, "html5", 1))
                     .retrieve()
                     .toBodilessEntity()
                     .timeout(Duration.ofSeconds(10))
@@ -486,10 +486,7 @@ public class EveNgRestService implements EveNgService {
         log.debug("Fetching nodes for lab: '{}'", evengLabId);
         String cookie = authenticate();
         try {
-            // Construct URI properly: /api/labs{path}/nodes
             String uri = "/api/labs" + evengLabId + "/nodes";
-            log.debug("Calling EVE-NG API: GET {}", uri);
-            
             JsonNode response = webClient.get()
                     .uri(uri)
                     .header("Cookie", cookie)
@@ -498,39 +495,73 @@ public class EveNgRestService implements EveNgService {
                     .timeout(Duration.ofSeconds(15))
                     .block();
 
-            if (response == null || !response.has("data")) {
-                log.debug("No nodes data in response for lab: {}", evengLabId);
-                return Collections.emptyList();
-            }
+            if (response == null || !response.has("data")) return Collections.emptyList();
 
             List<EveNgNodeInfo> nodes = new ArrayList<>();
             response.get("data").fields().forEachRemaining(entry -> {
                 JsonNode nodeData = entry.getValue();
-                try {
-                    EveNgNodeInfo node = new EveNgNodeInfo(
-                            nodeData.path("id").asText(),
-                            nodeData.path("name").asText(),
-                            nodeData.path("type").asText(),
-                            nodeData.path("status").asInt(0),
-                            nodeData.path("cpu").asInt(1),
-                            nodeData.path("ram").asInt(256),
-                            nodeData.path("nvram").asInt(0),
-                            nodeData.path("disk").asInt(0),
-                            nodeData.path("image").asText(),
-                            nodeData.path("console").asText("telnet")
-                    );
-                    nodes.add(node);
-                } catch (Exception ex) {
-                    log.warn("Failed to parse node entry: {}", ex.getMessage());
+                nodes.add(new EveNgNodeInfo(
+                        nodeData.path("id").asText(), nodeData.path("name").asText(),
+                        nodeData.path("type").asText(), nodeData.path("status").asInt(0),
+                        nodeData.path("cpu").asInt(1), nodeData.path("ram").asInt(256),
+                        nodeData.path("nvram").asInt(0), nodeData.path("disk").asInt(0),
+                        nodeData.path("image").asText(), nodeData.path("console").asText("telnet")
+                ));
+            });
+            return nodes;
+        } catch (Exception ex) {
+            log.warn("Failed to get lab nodes for '{}': {}", evengLabId, ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public Map<String, Object> getRawLabNodes(String evengLabId) {
+        log.debug("Fetching raw nodes for lab: '{}'", evengLabId);
+        String cookie = authenticate();
+        try {
+            String uri = "/api/labs" + evengLabId + "/nodes";
+            Map<String, Object> rawResponse = webClient.get()
+                    .uri(uri)
+                    .header("Cookie", cookie)
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block();
+
+            if (rawResponse == null || !rawResponse.containsKey("data")) {
+                return Collections.emptyMap();
+            }
+
+            Map<String, Object> nodes = (Map<String, Object>) rawResponse.get("data");
+            
+            // Prepend the host to the URL for each node
+            nodes.forEach((id, nodeObj) -> {
+                if (nodeObj instanceof Map) {
+                    Map<String, Object> node = (Map<String, Object>) nodeObj;
+                    if (node.containsKey("url")) {
+                        String relativeUrl = (String) node.get("url");
+                        if (relativeUrl != null) {
+                            if (relativeUrl.startsWith("/")) {
+                                // HTML5 link: Prepend http://host
+                                String absoluteUrl = "http://" + evengHost + relativeUrl;
+                                node.put("url", absoluteUrl);
+                            } else if (relativeUrl.startsWith("telnet://")) {
+                                // Native telnet link: Keep as is
+                                log.debug("Native telnet URL detected, skipping prefix: {}", relativeUrl);
+                            } else if (!relativeUrl.startsWith("http")) {
+                                // Other relative links
+                                String absoluteUrl = "http://" + evengHost + "/" + relativeUrl;
+                                node.put("url", absoluteUrl);
+                            }
+                        }
+                    }
                 }
             });
 
-            log.info("✓ Retrieved {} nodes for lab '{}'", nodes.size(), evengLabId);
             return nodes;
         } catch (WebClientResponseException ex) {
-            log.warn("Failed to get nodes for lab '{}': HTTP {}", evengLabId, ex.getStatusCode());
-            throw new EveNgIntegrationException(
-                    "Failed to get lab nodes: HTTP " + ex.getStatusCode(), ex);
+            log.warn("Failed to get raw nodes for lab '{}': HTTP {}", evengLabId, ex.getStatusCode());
+            throw new EveNgIntegrationException("Failed to get lab nodes: HTTP " + ex.getStatusCode(), ex);
         }
     }
 

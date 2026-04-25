@@ -385,6 +385,19 @@ public class LabService implements LabUseCase {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.Map<String, Object> getLabNodes(java.util.UUID labId, java.util.UUID requesterId, boolean isAdmin) {
+        log.info("Fetching raw nodes for lab id={} (requester={})", labId, requesterId);
+        Lab lab = findLabAndCheckAccess(labId, requesterId, isAdmin);
+        
+        if (!lab.isRunning()) {
+            throw new InvalidLabStateException("Lab must be RUNNING to list nodes and access consoles.");
+        }
+        
+        return eveNgService.getRawLabNodes(lab.getEvengLabId());
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     /**

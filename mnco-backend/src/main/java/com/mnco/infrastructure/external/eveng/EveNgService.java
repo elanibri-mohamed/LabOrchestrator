@@ -8,6 +8,7 @@ import com.mnco.infrastructure.external.eveng.model.EveNgNodeInfo;
 import com.mnco.infrastructure.external.eveng.model.EveNgNodeStatus;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -76,4 +77,12 @@ public interface EveNgService {
      * @return list of nodes in the lab
      */
     List<EveNgNodeInfo> getLabNodes(String evengLabId);
+
+    /**
+     * Retrieve all nodes within a lab with raw details (including URLs).
+     *
+     * @param evengLabId EVE-NG lab path
+     * @return map of nodes in the lab
+     */
+    Map<String, Object> getRawLabNodes(String evengLabId);
 }
