@@ -78,29 +78,17 @@ public class AuthService implements AuthUseCase {
         String ip = resolveClientIp();
         String ua = resolveUserAgent();
 
-        User user = userRepository.findByUsername(request.usernameOrEmail())
-                .or(() -> userRepository.findByEmail(request.usernameOrEmail()))
-                .orElseGet(() -> {
-                    auditLogService.logLoginFailed(request.usernameOrEmail(), ip, ua);
-                    throw new InvalidCredentialsException("Invalid credentials");
-                });
-
-        if (!user.isEnabled()) {
-            auditLogService.logLoginFailed(request.usernameOrEmail(), ip, ua);
-            throw new InvalidCredentialsException("Account is disabled. Contact an administrator.");
-        }
+        User user = userRepository.findByUsernameOrEmail(request.usernameOrEmail(), request.usernameOrEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid username or email"));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            log.warn("Failed login for username='{}'", request.usernameOrEmail());
-            auditLogService.logLoginFailed(request.usernameOrEmail(), ip, ua);
-            throw new InvalidCredentialsException("Invalid credentials");
+            throw new InvalidCredentialsException("Invalid password");
         }
 
-        log.info("User authenticated: id={}, username='{}'", user.getId(), user.getUsername());
-        auditLogService.logLogin(user.getId(), user.getUsername(), ip, ua);
+        String accessToken = jwtService.generateToken(user.getUsername(), user.getRole().name());
+        String refreshToken = jwtService.generateRefreshToken(user.getUsername());
 
-        String token = jwtService.generateToken(user.getUsername(), user.getRole().name());
-        return AuthResponse.of(token, jwtService.getExpirationMs(),
+        return AuthResponse.of(accessToken, jwtService.getExpirationMs(), refreshToken,
                 user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
 
@@ -115,27 +103,19 @@ public class AuthService implements AuthUseCase {
     @Override
     @Transactional
     public AuthResponse refreshToken(String refreshToken) {
-        log.info("Token refresh attempt");
-        String username = jwtService.extractUsername(refreshToken);
+        String username = jwtService.validateRefreshToken(refreshToken);
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new InvalidCredentialsException("User not found: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (!user.isEnabled()) {
-            throw new InvalidCredentialsException("Account is disabled");
-        }
-
-        String newToken = jwtService.generateToken(user.getUsername(), user.getRole().name());
-        return AuthResponse.of(newToken, jwtService.getExpirationMs(),
+        String newAccessToken = jwtService.generateToken(user.getUsername(), user.getRole().name());
+        return AuthResponse.of(newAccessToken, jwtService.getExpirationMs(), refreshToken,
                 user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
 
     @Override
     @Transactional
     public void logout(String token) {
-        log.info("Logout attempt");
-        // Token invalidation logic would go here
-        // For now, this is a no-op as tokens are stateless
-        // In a production system, you might add the token to a blacklist
+        jwtService.revokeToken(token);
     }
 
     @Override

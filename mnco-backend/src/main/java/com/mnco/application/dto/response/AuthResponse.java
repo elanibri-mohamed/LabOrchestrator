@@ -24,4 +24,10 @@ public record AuthResponse(
                                    String username, String email, UserRole role) {
         return new AuthResponse(token, "Bearer", expiresIn, userId, username, email, role, null);
     }
+
+    /** Convenience factory with refresh token */
+    public static AuthResponse of(String token, long expiresIn, String refreshToken,
+                                   UUID userId, String username, String email, UserRole role) {
+        return new AuthResponse(token, "Bearer", expiresIn, userId, username, email, role, refreshToken);
+    }
 }

@@ -62,6 +62,24 @@ public class JwtService {
     }
 
     /**
+     * Generates a refresh token for the given user.
+     *
+     * @param username the subject of the token (username)
+     * @return signed refresh token
+     */
+    public String generateRefreshToken(String username) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + (expirationMs * 10)); // Longer expiry for refresh tokens
+
+        return Jwts.builder()
+                .subject(username)
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(signingKey)
+                .compact();
+    }
+
+    /**
      * Extracts the username (subject) from a JWT token.
      *
      * @param token the raw JWT string (without "Bearer " prefix)
@@ -95,6 +113,32 @@ public class JwtService {
     }
 
     /**
+     * Validates a refresh token and returns the username if valid.
+     *
+     * @param token the refresh token
+     * @return the username embedded in the token
+     */
+    public String validateRefreshToken(String token) {
+        try {
+            return extractClaims(token).getSubject();
+        } catch (JwtException e) {
+            log.error("Invalid refresh token", e);
+            throw new IllegalArgumentException("Invalid refresh token");
+        }
+    }
+
+    /**
+     * Revokes a token (e.g., by adding it to a blacklist).
+     * This is a placeholder for actual revocation logic.
+     *
+     * @param token the token to revoke
+     */
+    public void revokeToken(String token) {
+        log.info("Token revoked: {}", token);
+        // Implement token revocation logic (e.g., add to blacklist)
+    }
+
+    /**
      * Returns the configured token expiration in milliseconds.
      */
     public long getExpirationMs() {
@@ -104,10 +148,20 @@ public class JwtService {
     // ── Private ───────────────────────────────────────────────────────────────
 
     private Claims extractClaims(String token) {
+        if (token == null) {
+            throw new IllegalArgumentException("JWT token is null");
+        }
+        String sanitizedToken = token.trim();
+        if (sanitizedToken.toLowerCase().startsWith("bearer ")) {
+            sanitizedToken = sanitizedToken.substring(7).trim();
+        }
+        if (sanitizedToken.contains(" ")) {
+            throw new io.jsonwebtoken.MalformedJwtException("Compact JWT strings may not contain whitespace.");
+        }
         return Jwts.parser()
                 .verifyWith(signingKey)
                 .build()
-                .parseSignedClaims(token)
+                .parseSignedClaims(sanitizedToken)
                 .getPayload();
     }
 }

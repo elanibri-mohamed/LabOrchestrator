@@ -32,7 +32,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody LoginRequest request) {
-        log.info("POST /auth/login - email=");
+        log.info("POST /auth/login - email={}", request.usernameOrEmail());
         AuthResponse response = authUseCase.login(request);
         return ResponseEntity.ok(response);
     }

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-19T01:27:46+0100",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 25.0.2 (Oracle Corporation)"
+    date = "2026-04-19T22:28:17+0100",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.2 (Amazon.com Inc.)"
 )
 @Component
 public class LabTemplateMapperImpl implements LabTemplateMapper {
@@ -72,14 +72,14 @@ public class LabTemplateMapperImpl implements LabTemplateMapper {
 
         LabTemplateJpaEntity.LabTemplateJpaEntityBuilder labTemplateJpaEntity = LabTemplateJpaEntity.builder();
 
-        labTemplateJpaEntity.authorId( template.getAuthorId() );
-        labTemplateJpaEntity.createdAt( template.getCreatedAt() );
-        labTemplateJpaEntity.description( template.getDescription() );
         labTemplateJpaEntity.id( template.getId() );
         labTemplateJpaEntity.name( template.getName() );
+        labTemplateJpaEntity.description( template.getDescription() );
         labTemplateJpaEntity.topologyYaml( template.getTopologyYaml() );
-        labTemplateJpaEntity.updatedAt( template.getUpdatedAt() );
         labTemplateJpaEntity.version( template.getVersion() );
+        labTemplateJpaEntity.authorId( template.getAuthorId() );
+        labTemplateJpaEntity.createdAt( template.getCreatedAt() );
+        labTemplateJpaEntity.updatedAt( template.getUpdatedAt() );
 
         return labTemplateJpaEntity.build();
     }

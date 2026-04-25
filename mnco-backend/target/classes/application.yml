@@ -1,9 +1,6 @@
 spring:
-  application:
-    name: mnco-backend
-
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:mnco_db}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:mnco_db}?ssl=false
     username: ${DB_USERNAME:mnco_user}
     password: ${DB_PASSWORD:mnco_pass}
     driver-class-name: org.postgresql.Driver
