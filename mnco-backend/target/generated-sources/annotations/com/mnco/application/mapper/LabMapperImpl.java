@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-25T00:59:22+0100",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.2 (Amazon.com Inc.)"
+    date = "2026-04-19T01:30:16+0100",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 25.0.2 (Oracle Corporation)"
 )
 @Component
 public class LabMapperImpl implements LabMapper {
@@ -80,6 +80,8 @@ public class LabMapperImpl implements LabMapper {
         lab.lastActiveAt( entity.getLastActiveAt() );
         lab.createdAt( entity.getCreatedAt() );
         lab.updatedAt( entity.getUpdatedAt() );
+        lab.syncedFromEveNg( entity.isSyncedFromEveNg() );
+        lab.externalMetadata( entity.getExternalMetadata() );
 
         return lab.build();
     }
@@ -108,6 +110,8 @@ public class LabMapperImpl implements LabMapper {
         labJpaEntity.lastActiveAt( lab.getLastActiveAt() );
         labJpaEntity.createdAt( lab.getCreatedAt() );
         labJpaEntity.updatedAt( lab.getUpdatedAt() );
+        labJpaEntity.syncedFromEveNg( lab.isSyncedFromEveNg() );
+        labJpaEntity.externalMetadata( lab.getExternalMetadata() );
 
         return labJpaEntity.build();
     }

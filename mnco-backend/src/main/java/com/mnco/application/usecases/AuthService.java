@@ -49,11 +49,17 @@ public class AuthService implements AuthUseCase {
             throw new DuplicateResourceException("Email already registered: " + request.email());
         }
 
+        // Determine role: use provided role or default to STUDENT
+        UserRole userRole = UserRole.STUDENT;
+        if (request.role() != null && !request.role().isBlank()) {
+            userRole = UserRole.valueOf(request.role());
+        }
+
         User user = User.builder()
                 .username(request.username())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .role(UserRole.STUDENT)
+                .role(userRole)
                 .enabled(true)
                 .build();
 

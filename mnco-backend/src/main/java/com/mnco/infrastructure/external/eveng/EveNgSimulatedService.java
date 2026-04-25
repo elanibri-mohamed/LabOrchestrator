@@ -2,13 +2,17 @@ package com.mnco.infrastructure.external.eveng;
 
 import com.mnco.domain.entities.Lab;
 import com.mnco.infrastructure.external.eveng.model.EveNgCloneResult;
+import com.mnco.infrastructure.external.eveng.model.EveNgLabInfo;
 import com.mnco.infrastructure.external.eveng.model.EveNgLabResult;
+import com.mnco.infrastructure.external.eveng.model.EveNgNodeInfo;
 import com.mnco.infrastructure.external.eveng.model.EveNgNodeStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -83,6 +87,53 @@ public class EveNgSimulatedService implements EveNgService {
                 nodeId,
                 "SimNode-" + nodeId,
                 "RUNNING"
+        );
+    }
+
+    // ── Lab Discovery ────────────────────────────────────────────────────────
+
+    @Override
+    public List<EveNgLabInfo> getAllLabs() {
+        log.info("[SIM] Fetching all labs from simulated EVE-NG");
+        long now = System.currentTimeMillis() / 1000;
+        return List.of(
+                new EveNgLabInfo("1", "NetworkTopology-1", "/NetworkTopology-1.unl",
+                        "Basic networking lab with routers and switches", "1.0",
+                        now - 86400, now - 3600, 0, 3),
+                new EveNgLabInfo("2", "SecurityLab-1", "/SecurityLab-1.unl",
+                        "Firewall and IDS configuration lab", "1.0",
+                        now - 172800, now - 7200, 0, 5),
+                new EveNgLabInfo("3", "CloudNetwork-1", "/CloudNetwork-1.unl",
+                        "Multi-cloud networking simulation", "1.0",
+                        now - 259200, now - 10800, 0, 4)
+        );
+    }
+
+    @Override
+    public Optional<EveNgLabInfo> getLabByPath(String evengLabPath) {
+        log.debug("[SIM] Fetching lab by path: '{}'", evengLabPath);
+        sleep(300);
+        // Return the first matching lab from the simulated list
+        return getAllLabs().stream()
+                .filter(lab -> lab.path().equals(evengLabPath))
+                .findFirst();
+    }
+
+    @Override
+    public List<EveNgNodeInfo> getLabNodes(String evengLabId) {
+        log.debug("[SIM] Fetching nodes for lab: '{}'", evengLabId);
+        sleep(500);
+        return List.of(
+                new EveNgNodeInfo("1", "Router-1", "iol", 2, 2, 2048, 512, 0,
+                        "i86bi_linux_l2-adventerprisek9-M", "telnet"),
+                new EveNgNodeInfo("2", "Router-2", "iol", 2, 2, 2048, 512, 0,
+                        "i86bi_linux_l2-adventerprisek9-M", "telnet"),
+                new EveNgNodeInfo("3", "Switch-1", "iol", 0, 1, 1024, 256, 0,
+                        "i86bi_linux_l2-adventerprisek9-M", "telnet"),
+                new EveNgNodeInfo("4", "PC-1", "vpcs", 0, 0, 256, 0, 0,
+                        "vpcs-8.2", "telnet"),
+                new EveNgNodeInfo("5", "Docker-Web", "docker", 2, 4, 4096, 1024, 20,
+                        "nginx:latest", "telnet")
         );
     }
 

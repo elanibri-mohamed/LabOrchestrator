@@ -55,19 +55,26 @@ jwt:
 
 # EVE-NG Integration
 eveng:
-  base-url: ${EVENG_BASE_URL:http://192.168.100.10}
+  base-url: ${EVENG_BASE_URL:http://10.10.30.10}
   username: ${EVENG_USERNAME:admin}
   password: ${EVENG_PASSWORD:eve}
   api-path: /api
   connection-timeout-ms: 5000
   read-timeout-ms: 30000
   lab-base-path: /opt/unetlab/labs
-  simulation-mode: ${EVENG_SIMULATION:false}
 
 # Resource Quota Defaults
 quota:
   default-max-labs: 3
   default-max-cpu: 8
+  default-max-ram-gb: 32
+  default-max-storage-gb: 100
+  lab-idle-timeout-minutes: 120
+
+# Scheduling
+scheduler:
+  lab-sync-enabled: ${LAB_SYNC_ENABLED:false}
+  lab-sync-interval: ${LAB_SYNC_INTERVAL:3600000}  # 1 hour in milliseconds
   default-max-ram-gb: 16
   default-max-storage-gb: 50
   lab-idle-timeout-minutes: 120

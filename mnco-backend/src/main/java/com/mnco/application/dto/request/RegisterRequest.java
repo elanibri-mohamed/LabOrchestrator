@@ -6,7 +6,9 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 /**
- * Payload for user self-registration.
+ * Payload for user registration.
+ * - Non-admin users registering themselves: omit role (defaults to STUDENT)
+ * - Admin users creating users: can specify role (ADMIN, INSTRUCTOR, STUDENT, RESEARCHER)
  */
 public record RegisterRequest(
 
@@ -22,5 +24,8 @@ public record RegisterRequest(
 
         @NotBlank(message = "Password is required")
         @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
-        String password
+        String password,
+
+        @Pattern(regexp = "^(ADMIN|INSTRUCTOR|STUDENT|RESEARCHER)$", message = "Invalid role. Must be ADMIN, INSTRUCTOR, STUDENT, or RESEARCHER")
+        String role  // Optional: admin-only field. Null defaults to STUDENT
 ) {}

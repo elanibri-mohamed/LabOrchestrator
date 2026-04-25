@@ -320,8 +320,9 @@ EveNgService interface:
   getLabNodeStatuses(evengLabId)    -> List<EveNgNodeStatus>
   getNodeConsoleInfo(labId, nodeId) -> EveNgNodeConsoleInfo
 
-EveNgRestService  (eveng.simulation-mode=false) -> real WebClient HTTP calls
-EveNgSimulatedService (eveng.simulation-mode=true) -> in-memory simulation
+EveNgRestService  -> real WebClient HTTP calls to EVE-NG
+                  -> throws EveNgIntegrationException if server unreachable
+                  -> NO SIMULATION MODE
 
 EVE-NG API mappings:
   createTopology -> POST /api/labs

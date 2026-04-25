@@ -8,8 +8,7 @@ import org.springframework.test.context.TestPropertySource;
 /**
  * Base class for all controller integration tests.
  *
- * Uses H2 in-memory database (application-test.yml),
- * simulation-mode EVE-NG, and a full Spring Security context.
+ * Uses H2 in-memory database (application-test.yml) and a full Spring Security context.
  *
  * Extend this to get MockMvc + full application context without
  * duplicating annotations everywhere.
@@ -18,7 +17,6 @@ import org.springframework.test.context.TestPropertySource;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
-        "eveng.simulation-mode=true",
         "jwt.secret=integration-test-secret-key-must-be-at-least-256bits-long-for-hmac-sha",
         "jwt.expiration-ms=3600000",
         "quota.default-max-labs=5",

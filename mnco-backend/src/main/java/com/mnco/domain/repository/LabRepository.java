@@ -24,6 +24,12 @@ public interface LabRepository {
     List<Lab> findAll();
 
     /**
+     * Find lab by its EVE-NG lab path.
+     * Used during lab discovery/sync to check for duplicate imports.
+     */
+    Optional<Lab> findByEvengLabId(String evengLabId);
+
+    /**
      * Count labs by owner that are actively using resources (not DELETED/ERROR).
      */
     long countActiveLabsByOwner(UUID ownerId);

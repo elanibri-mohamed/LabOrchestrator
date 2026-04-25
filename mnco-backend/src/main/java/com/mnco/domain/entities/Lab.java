@@ -6,6 +6,7 @@ import java.util.UUID;
 /**
  * Core domain entity representing a virtual laboratory environment.
  * Encapsulates the lifecycle state and EVE-NG binding for a lab.
+ * Supports both locally created and EVE-NG discovered labs (read-only mode).
  */
 public class Lab {
 
@@ -25,6 +26,8 @@ public class Lab {
     private Instant lastActiveAt;
     private Instant createdAt;
     private Instant updatedAt;
+    private boolean syncedFromEveNg;
+    private String externalMetadata;
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
@@ -47,6 +50,8 @@ public class Lab {
         this.lastActiveAt = builder.lastActiveAt;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
+        this.syncedFromEveNg = builder.syncedFromEveNg;
+        this.externalMetadata = builder.externalMetadata;
     }
 
     // ── Domain behaviour ──────────────────────────────────────────────────────
@@ -143,6 +148,12 @@ public class Lab {
     public Instant getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 
+    public boolean isSyncedFromEveNg() { return syncedFromEveNg; }
+    public void setSyncedFromEveNg(boolean syncedFromEveNg) { this.syncedFromEveNg = syncedFromEveNg; }
+
+    public String getExternalMetadata() { return externalMetadata; }
+    public void setExternalMetadata(String externalMetadata) { this.externalMetadata = externalMetadata; }
+
     // ── Builder ───────────────────────────────────────────────────────────────
 
     public static Builder builder() { return new Builder(); }
@@ -164,6 +175,8 @@ public class Lab {
         private Instant lastActiveAt;
         private Instant createdAt = Instant.now();
         private Instant updatedAt = Instant.now();
+        private boolean syncedFromEveNg = false;
+        private String externalMetadata;
 
         public Builder id(UUID id) { this.id = id; return this; }
         public Builder name(String name) { this.name = name; return this; }
@@ -181,6 +194,8 @@ public class Lab {
         public Builder lastActiveAt(Instant lastActiveAt) { this.lastActiveAt = lastActiveAt; return this; }
         public Builder createdAt(Instant createdAt) { this.createdAt = createdAt; return this; }
         public Builder updatedAt(Instant updatedAt) { this.updatedAt = updatedAt; return this; }
+        public Builder syncedFromEveNg(boolean synced) { this.syncedFromEveNg = synced; return this; }
+        public Builder externalMetadata(String metadata) { this.externalMetadata = metadata; return this; }
 
         public Lab build() { return new Lab(this); }
     }

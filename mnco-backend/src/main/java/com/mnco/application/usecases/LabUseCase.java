@@ -15,9 +15,9 @@ public interface LabUseCase {
 
     LabResponse createLab(CreateLabRequest request, UUID ownerId);
 
-    LabResponse startLab(UUID labId, UUID requesterId);
+    LabResponse startLab(UUID labId, UUID requesterId, boolean isAdmin);
 
-    LabResponse stopLab(UUID labId, UUID requesterId);
+    LabResponse stopLab(UUID labId, UUID requesterId, boolean isAdmin);
 
     void deleteLab(UUID labId, UUID requesterId);
 
@@ -32,4 +32,13 @@ public interface LabUseCase {
 
     /** Get console connection details for a specific node (FR-LM-09). */
     EveNgNodeConsoleInfo getNodeConsoleInfo(UUID labId, String nodeId, UUID requesterId);
+
+    /**
+     * Discover and sync labs from EVE-NG server to local database.
+     * Used for read-only mode where labs are managed in EVE-NG only.
+     * Discovers all labs from EVE-NG and creates local Lab records for new ones.
+     *
+     * @return list of newly discovered/synced labs
+     */
+    List<LabResponse> discoverLabsFromEveNg();
 }

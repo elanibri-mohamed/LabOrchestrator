@@ -61,7 +61,7 @@ public class LabController {
             @AuthenticationPrincipal MncoUserDetails principal) {
         log.info("POST /api/v1/labs/{}/start — user={}", id, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success("Lab started",
-                labUseCase.startLab(id, principal.getUserId())));
+                labUseCase.startLab(id, principal.getUserId(), principal.isAdmin())));
     }
 
     @PostMapping("/{id}/stop")
@@ -70,7 +70,7 @@ public class LabController {
             @AuthenticationPrincipal MncoUserDetails principal) {
         log.info("POST /api/v1/labs/{}/stop — user={}", id, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success("Lab stopped",
-                labUseCase.stopLab(id, principal.getUserId())));
+                labUseCase.stopLab(id, principal.getUserId(), principal.isAdmin())));
     }
 
     @PostMapping("/{id}/clone")
@@ -106,5 +106,15 @@ public class LabController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<LabResponse>>> getAllLabsAdmin() {
         return ResponseEntity.ok(ApiResponse.success(labUseCase.getAllLabs()));
+    }
+
+    @PostMapping("/sync-from-eveng")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")
+    public ResponseEntity<ApiResponse<List<LabResponse>>> syncLabsFromEveNg() {
+        log.info("POST /api/v1/labs/sync-from-eveng — user initiated lab discovery");
+        List<LabResponse> synced = labUseCase.discoverLabsFromEveNg();
+        return ResponseEntity.ok(ApiResponse.success(
+                String.format("Lab discovery completed: %d labs synced", synced.size()),
+                synced));
     }
 }

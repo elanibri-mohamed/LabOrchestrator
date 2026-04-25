@@ -11,6 +11,7 @@ import java.util.UUID;
 
 /**
  * JPA persistence entity for the 'labs' table.
+ * Supports both locally created and EVE-NG discovered labs (read-only mode).
  */
 @Entity
 @Table(name = "labs", indexes = {
@@ -77,4 +78,10 @@ public class LabJpaEntity {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @Column(name = "synced_from_eveng", nullable = false)
+    private boolean syncedFromEveNg = false;
+
+    @Column(name = "external_metadata", columnDefinition = "TEXT")
+    private String externalMetadata;
 }
