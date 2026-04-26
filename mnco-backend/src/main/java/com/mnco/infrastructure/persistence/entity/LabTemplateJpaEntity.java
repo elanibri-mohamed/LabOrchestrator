@@ -1,6 +1,7 @@
 package com.mnco.infrastructure.persistence.entity;
 
 import com.mnco.domain.entities.LabTemplateStatus;
+import com.mnco.infrastructure.persistence.converter.LabTemplateStatusConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -36,7 +37,7 @@ public class LabTemplateJpaEntity {
     @Column(name = "eve_template_path", nullable = false, unique = true, length = 512)
     private String eveTemplatePath;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = LabTemplateStatusConverter.class)
     @Column(nullable = false, length = 20)
     private LabTemplateStatus status;
 

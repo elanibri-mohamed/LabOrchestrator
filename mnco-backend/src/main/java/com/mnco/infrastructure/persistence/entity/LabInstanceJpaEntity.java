@@ -1,6 +1,7 @@
 package com.mnco.infrastructure.persistence.entity;
 
 import com.mnco.domain.entities.InstanceStatus;
+import com.mnco.infrastructure.persistence.converter.InstanceStatusConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -39,7 +40,7 @@ public class LabInstanceJpaEntity {
     @Column(name = "eve_instance_path", nullable = false, unique = true, length = 512)
     private String eveInstancePath;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = InstanceStatusConverter.class)
     @Column(nullable = false, length = 20)
     private InstanceStatus status;
 
