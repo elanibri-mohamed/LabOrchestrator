@@ -8,13 +8,16 @@ import com.mnco.application.usecases.MultiTenantLabService;
 import com.mnco.domain.entities.UserRole;
 import com.mnco.domain.repository.ResourceQuotaRepository;
 import com.mnco.domain.repository.UserRepository;
+import com.mnco.domain.entities.ResourceQuota;
 import com.mnco.exception.custom.ResourceNotFoundException;
+import com.mnco.security.service.UserDetailsServiceImpl.MncoUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

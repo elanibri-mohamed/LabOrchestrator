@@ -16,7 +16,9 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -240,7 +242,11 @@ public class MultiTenantLabService {
 
         // Start via EVE-NG
         try {
-        eveNgService.startLab(instance.getEvengInstancePath());
+            eveNgService.startLab(instance.getEvengInstancePath());
+        } catch (Exception ex) {
+            log.error("Failed to start instance {}: {}", instance.getId(), ex.getMessage(), ex);
+            throw new EveNgIntegrationException("Failed to start lab instance", ex);
+        }
         instance.markRunning(); // sets status and startedAt
         LabInstance saved = instanceRepository.save(instance);
 
@@ -499,7 +505,7 @@ public class MultiTenantLabService {
                         List<EveNgNodeStatus> nodes = eveNgService.getLabNodeStatuses(instance.getEvengInstancePath());
                         nodeStatuses = nodes.stream()
                                 .collect(Collectors.toMap(
-                                        EveNgNodeStatus::nodeId,
+                                        EveNgNodeStatus::id,
                                         ns -> ns.status() == 2 ? "RUNNING" : "STOPPED"));
                     } catch (Exception ex) {
                         log.warn("Could not fetch node statuses for instance {}: {}", instance.getId(), ex.getMessage());
