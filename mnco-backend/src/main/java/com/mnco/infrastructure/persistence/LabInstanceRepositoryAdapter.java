@@ -44,6 +44,13 @@ public class LabInstanceRepositoryAdapter implements LabInstanceRepository {
     }
 
     @Override
+    public Optional<LabInstance> findRunningByUserId(UUID userId) {
+        return jpaRepository
+                .findFirstByUserIdAndStatus(userId, com.mnco.domain.entities.InstanceStatus.RUNNING)
+                .map(mapper::toDomain);
+    }
+
+    @Override
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
@@ -52,6 +59,15 @@ public class LabInstanceRepositoryAdapter implements LabInstanceRepository {
     public List<LabInstance> findRunningLabsIdleSince(Instant threshold) {
         return jpaRepository
                 .findByStatusAndStartedAtBefore(com.mnco.domain.entities.InstanceStatus.RUNNING, threshold)
+                .stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LabInstance> findRunningLabsExpiredAtOrBefore(Instant threshold) {
+        return jpaRepository
+                .findByStatusAndExpiresAtLessThanEqual(com.mnco.domain.entities.InstanceStatus.RUNNING, threshold)
                 .stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());

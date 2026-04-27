@@ -28,6 +28,13 @@ public class LabAssignmentService implements LabAssignmentUseCase {
     @Transactional
     public void assignToTeacher(UUID templateId, UUID teacherId, UUID adminId) {
         log.info("Admin {} assigning template {} to teacher {}", adminId, templateId, teacherId);
+
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException("Assigning admin not found"));
+
+        if (!admin.isAdmin()) {
+            throw new UnauthorizedException("Only admins can assign labs to teachers");
+        }
         
         validateUserRole(teacherId, UserRole.TEACHER);
         
@@ -50,12 +57,15 @@ public class LabAssignmentService implements LabAssignmentUseCase {
     public void assignToStudent(UUID templateId, UUID studentId, UUID teacherId) {
         log.info("Teacher {} assigning template {} to student {}", teacherId, templateId, studentId);
         
-        // Guard 3: Check if teacher has access to the template (Admins skip this check)
         User assigner = userRepository.findById(teacherId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assigner not found"));
-                
-        if (assigner.getRole() != UserRole.ADMIN && !assignmentRepository.existsByTemplateIdAndUserId(templateId, teacherId)) {
-            throw new UnauthorizedException("Teacher does not have access to this template");
+
+        if (!assigner.isAdmin() && !assigner.isTeacher()) {
+            throw new UnauthorizedException("Only teachers or admins can assign labs to students");
+        }
+
+        if (assigner.isTeacher() && !assignmentRepository.existsByTemplateIdAndUserId(templateId, teacherId)) {
+            throw new UnauthorizedException("Teachers can only assign labs that are assigned to them");
         }
         
         validateUserRole(studentId, UserRole.STUDENT);

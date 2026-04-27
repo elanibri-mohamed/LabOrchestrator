@@ -51,6 +51,9 @@ public class LabInstanceJpaEntity {
     @Column(name = "stopped_at")
     private Instant stoppedAt;
 
+    @Column(name = "expires_at")
+    private Instant expiresAt;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

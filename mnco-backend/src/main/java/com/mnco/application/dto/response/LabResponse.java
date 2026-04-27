@@ -21,5 +21,6 @@ public record LabResponse(
         int storageAllocated,
         Instant startedAt,
         Instant stoppedAt,
+        Instant expiresAt,
         Instant createdAt
 ) {}

@@ -17,6 +17,8 @@ public interface LabInstanceUseCase {
 
     LabResponse resetInstance(UUID templateId, UUID userId);
 
+    LabResponse resetTimer(UUID templateId, UUID userId);
+
     List<LabResponse> getMyInstances(UUID userId);
 
     EveNgNodeConsoleInfo getNodeConsoleInfo(UUID templateId, String nodeId, UUID userId);

@@ -1,9 +1,12 @@
 package com.mnco.infrastructure.persistence.repository;
 
 import com.mnco.infrastructure.persistence.entity.LabInstanceJpaEntity;
+import com.mnco.domain.entities.InstanceStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,5 +17,9 @@ public interface LabInstanceJpaRepository extends JpaRepository<LabInstanceJpaEn
 
     Optional<LabInstanceJpaEntity> findByEveInstancePath(String path);
 
-    java.util.List<LabInstanceJpaEntity> findByStatusAndStartedAtBefore(com.mnco.domain.entities.InstanceStatus status, java.time.Instant threshold);
+    List<LabInstanceJpaEntity> findByStatusAndStartedAtBefore(InstanceStatus status, Instant threshold);
+
+    Optional<LabInstanceJpaEntity> findFirstByUserIdAndStatus(UUID userId, InstanceStatus status);
+
+    List<LabInstanceJpaEntity> findByStatusAndExpiresAtLessThanEqual(InstanceStatus status, Instant threshold);
 }

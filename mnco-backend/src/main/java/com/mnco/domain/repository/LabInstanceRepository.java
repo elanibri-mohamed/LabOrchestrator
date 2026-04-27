@@ -17,7 +17,11 @@ public interface LabInstanceRepository {
 
     Optional<LabInstance> findByEveInstancePath(String path);
 
+    Optional<LabInstance> findRunningByUserId(UUID userId);
+
     void deleteById(UUID id);
 
     java.util.List<LabInstance> findRunningLabsIdleSince(java.time.Instant threshold);
+
+    java.util.List<LabInstance> findRunningLabsExpiredAtOrBefore(java.time.Instant threshold);
 }

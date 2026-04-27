@@ -118,7 +118,7 @@
 
 .lab-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   background: #f0f2f5;
   padding: 12px;
@@ -146,7 +146,7 @@
 
 .lab-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 8px;
 }
 
@@ -163,6 +163,19 @@
 .action-btn-main.start { background: var(--fb-success); color: white; }
 .action-btn-main.stop { background: var(--fb-error); color: white; }
 .action-btn-main.secondary { background: var(--fb-hover); color: var(--fb-text); }
+.action-btn-main.outline {
+  border: 1px solid var(--fb-divider);
+  background: transparent;
+  color: var(--fb-text);
+}
+.action-btn-main:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.timer-expired {
+  color: var(--fb-error);
+}
 
 .empty-state {
   text-align: center;
@@ -245,4 +258,14 @@
 
 .console-link:hover {
   opacity: 0.9;
+}
+
+@media (max-width: 640px) {
+  .lab-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lab-actions {
+    grid-template-columns: 1fr;
+  }
 }

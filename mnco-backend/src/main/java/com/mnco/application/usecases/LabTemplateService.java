@@ -5,15 +5,20 @@ import com.mnco.application.mapper.LabTemplateMapper;
 import com.mnco.domain.entities.AuditLog;
 import com.mnco.domain.entities.LabTemplate;
 import com.mnco.domain.entities.LabTemplateStatus;
+import com.mnco.domain.entities.User;
+import com.mnco.domain.repository.LabAssignmentRepository;
 import com.mnco.domain.repository.LabTemplateRepository;
 import com.mnco.domain.repository.UserRepository;
 import com.mnco.exception.custom.EveNgIntegrationException;
+import com.mnco.exception.custom.UnauthorizedException;
 import com.mnco.exception.custom.ResourceNotFoundException;
 import com.mnco.infrastructure.external.eveng.EveNgService;
 import com.mnco.infrastructure.external.eveng.model.EveNgLabInfo;
 import com.mnco.infrastructure.external.eveng.model.EveNgNodeInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +26,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,6 +36,7 @@ import java.util.stream.Collectors;
 public class LabTemplateService implements LabTemplateUseCase {
 
     private final LabTemplateRepository templateRepository;
+    private final LabAssignmentRepository assignmentRepository;
     private final EveNgService eveNgService;
     private final LabTemplateMapper templateMapper;
     private final AuditLogService auditLogService;
@@ -38,7 +45,20 @@ public class LabTemplateService implements LabTemplateUseCase {
     @Override
     @Transactional(readOnly = true)
     public List<LabResponse> getAllTemplates() {
+    User currentUser = getCurrentUser();
+
+    if (currentUser.isAdmin()) {
         return templateRepository.findAllByStatus(LabTemplateStatus.ACTIVE).stream()
+            .map(templateMapper::toResponse)
+            .collect(Collectors.toList());
+    }
+
+    Set<UUID> assignedTemplateIds = assignmentRepository.findAllByUserId(currentUser.getId()).stream()
+        .map(assignment -> assignment.getTemplateId())
+        .collect(Collectors.toSet());
+
+    return templateRepository.findAllByStatus(LabTemplateStatus.ACTIVE).stream()
+        .filter(template -> assignedTemplateIds.contains(template.getId()))
                 .map(templateMapper::toResponse)
                 .collect(Collectors.toList());
     }
@@ -46,9 +66,15 @@ public class LabTemplateService implements LabTemplateUseCase {
     @Override
     @Transactional(readOnly = true)
     public LabResponse getTemplateById(UUID id) {
-        return templateRepository.findById(id)
-                .map(templateMapper::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Template not found: " + id));
+    LabTemplate template = templateRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Template not found: " + id));
+
+    User currentUser = getCurrentUser();
+    if (!currentUser.isAdmin() && !assignmentRepository.existsByTemplateIdAndUserId(id, currentUser.getId())) {
+        throw new UnauthorizedException("You are not assigned to this lab template");
+    }
+
+    return templateMapper.toResponse(template);
     }
 
     @Override
@@ -118,5 +144,15 @@ public class LabTemplateService implements LabTemplateUseCase {
             log.error("Template discovery failed: {}", ex.getMessage(), ex);
             throw new EveNgIntegrationException("Failed to sync templates: " + ex.getMessage(), ex);
         }
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getName() == null) {
+            throw new UnauthorizedException("Authentication required");
+        }
+
+        return userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + authentication.getName()));
     }
 }

@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-26T19:57:41+0100",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 25.0.2 (Oracle Corporation)"
+    date = "2026-04-27T11:23:06+0100",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.2 (Amazon.com Inc.)"
 )
 @Component
 public class LabInstanceMapperImpl implements LabInstanceMapper {
@@ -30,6 +30,7 @@ public class LabInstanceMapperImpl implements LabInstanceMapper {
         labInstance.status( entity.getStatus() );
         labInstance.startedAt( entity.getStartedAt() );
         labInstance.stoppedAt( entity.getStoppedAt() );
+        labInstance.expiresAt( entity.getExpiresAt() );
         labInstance.createdAt( entity.getCreatedAt() );
         labInstance.updatedAt( entity.getUpdatedAt() );
 
@@ -51,6 +52,7 @@ public class LabInstanceMapperImpl implements LabInstanceMapper {
         labInstanceJpaEntity.status( instance.getStatus() );
         labInstanceJpaEntity.startedAt( instance.getStartedAt() );
         labInstanceJpaEntity.stoppedAt( instance.getStoppedAt() );
+        labInstanceJpaEntity.expiresAt( instance.getExpiresAt() );
         labInstanceJpaEntity.createdAt( instance.getCreatedAt() );
         labInstanceJpaEntity.updatedAt( instance.getUpdatedAt() );
 

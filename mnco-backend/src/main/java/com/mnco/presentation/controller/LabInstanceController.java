@@ -57,6 +57,15 @@ public class LabInstanceController {
                 instanceUseCase.resetInstance(templateId, principal.getUserId())));
     }
 
+    @PostMapping("/template/{templateId}/timer/reset")
+    public ResponseEntity<ApiResponse<LabResponse>> resetTimer(
+            @PathVariable UUID templateId,
+            @AuthenticationPrincipal MncoUserDetails principal) {
+        log.info("User {} resetting timer for template {}", principal.getUserId(), templateId);
+        return ResponseEntity.ok(ApiResponse.success("Lab timer reset",
+                instanceUseCase.resetTimer(templateId, principal.getUserId())));
+    }
+
     @GetMapping("/template/{templateId}/nodes")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getInstanceNodes(
             @PathVariable UUID templateId,

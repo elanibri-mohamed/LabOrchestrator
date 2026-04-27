@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-26T19:58:35+0100",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 25.0.2 (Oracle Corporation)"
+    date = "2026-04-27T11:23:06+0100",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.2 (Amazon.com Inc.)"
 )
 @Component
 public class LabTemplateMapperImpl implements LabTemplateMapper {
@@ -47,8 +47,9 @@ public class LabTemplateMapperImpl implements LabTemplateMapper {
         LabStatus status = LabStatus.STOPPED;
         Instant startedAt = null;
         Instant stoppedAt = null;
+        Instant expiresAt = null;
 
-        LabResponse labResponse = new LabResponse( id, name, description, status, ownerId, templateId, evengLabId, cpuAllocated, ramAllocated, storageAllocated, startedAt, stoppedAt, createdAt );
+        LabResponse labResponse = new LabResponse( id, name, description, status, ownerId, templateId, evengLabId, cpuAllocated, ramAllocated, storageAllocated, startedAt, stoppedAt, expiresAt, createdAt );
 
         return labResponse;
     }

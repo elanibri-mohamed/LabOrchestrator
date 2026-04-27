@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -198,14 +199,10 @@ public class EveNgRestService implements EveNgService {
             if (networksResponse != null && networksResponse.has("data")) {
                 networksResponse.get("data").fields().forEachRemaining(entry -> {
                     JsonNode net = entry.getValue();
-                    java.util.Map<String, Object> netPayload = new java.util.HashMap<>();
+                    Map<String, Object> netPayload = new HashMap<>();
                     net.fields().forEachRemaining(f -> {
                         if (!"id".equals(f.getKey())) {
-                            if (f.getValue().isNumber()) {
-                                netPayload.put(f.getKey(), f.getValue().asInt());
-                            } else {
-                                netPayload.put(f.getKey(), f.getValue().asText());
-                            }
+                            netPayload.put(f.getKey(), jsonNodeToJava(f.getValue()));
                         }
                     });
                     
@@ -230,14 +227,10 @@ public class EveNgRestService implements EveNgService {
             if (nodesResponse != null && nodesResponse.has("data")) {
                 nodesResponse.get("data").fields().forEachRemaining(entry -> {
                     JsonNode node = entry.getValue();
-                    java.util.Map<String, Object> nodePayload = new java.util.HashMap<>();
+                    Map<String, Object> nodePayload = new HashMap<>();
                     node.fields().forEachRemaining(f -> {
                         if (!"id".equals(f.getKey()) && !"url".equals(f.getKey()) && !"status".equals(f.getKey())) {
-                            if (f.getValue().isNumber()) {
-                                nodePayload.put(f.getKey(), f.getValue().asInt());
-                            } else {
-                                nodePayload.put(f.getKey(), f.getValue().asText());
-                            }
+                            nodePayload.put(f.getKey(), jsonNodeToJava(f.getValue()));
                         }
                     });
 
@@ -251,7 +244,10 @@ public class EveNgRestService implements EveNgService {
                 });
             }
 
-            // 6. Export nodes configs (saves to the .unl)
+            // 6. Copy topology links so node-to-node and node-to-network connections are preserved.
+            copyTopologyLinks(sourcePath, targetPath, cookie);
+
+            // 7. Export nodes configs (saves to the .unl)
             try {
                 webClient.get()
                         .uri("/api/labs" + targetPath + "/nodes/export")
@@ -271,6 +267,85 @@ public class EveNgRestService implements EveNgService {
         } catch (Exception ex) {
             throw new EveNgIntegrationException("Copy lab failed: " + ex.getMessage(), ex);
         }
+    }
+
+    private void copyTopologyLinks(String sourcePath, String targetPath, String cookie) {
+        try {
+            JsonNode topologyResponse = webClient.get()
+                    .uri("/api/labs" + sourcePath + "/topology")
+                    .header("Cookie", cookie)
+                    .retrieve()
+                    .bodyToMono(JsonNode.class)
+                    .block();
+
+            if (topologyResponse == null || !topologyResponse.has("data") || !topologyResponse.get("data").isArray()) {
+                log.warn("Source topology payload missing for '{}'; skipping link clone", sourcePath);
+                return;
+            }
+
+            JsonNode topologyPayload = topologyResponse.get("data");
+            RuntimeException lastFailure = null;
+
+            for (int attempt = 1; attempt <= 3; attempt++) {
+                try {
+                    webClient.post()
+                            .uri("/api/labs" + targetPath + "/topology")
+                            .header("Cookie", cookie)
+                            .bodyValue(topologyPayload)
+                            .retrieve()
+                            .toBodilessEntity()
+                            .block();
+                    return;
+                } catch (Exception postEx) {
+                    lastFailure = new RuntimeException(postEx);
+                    try {
+                        webClient.put()
+                                .uri("/api/labs" + targetPath + "/topology")
+                                .header("Cookie", cookie)
+                                .bodyValue(topologyPayload)
+                                .retrieve()
+                                .toBodilessEntity()
+                                .block();
+                        return;
+                    } catch (Exception putEx) {
+                        lastFailure = new RuntimeException(putEx);
+                        if (attempt < 3) {
+                            try {
+                                Thread.sleep(250L * attempt);
+                            } catch (InterruptedException interruptedException) {
+                                Thread.currentThread().interrupt();
+                                throw new EveNgIntegrationException("Interrupted while cloning topology links", interruptedException);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (lastFailure != null) {
+                throw lastFailure;
+            }
+        } catch (Exception ex) {
+            log.warn("Failed to copy topology links from '{}' to '{}': {}", sourcePath, targetPath, ex.getMessage());
+        }
+    }
+
+    private Object jsonNodeToJava(JsonNode node) {
+        if (node == null || node.isNull()) return null;
+        if (node.isTextual()) return node.asText();
+        if (node.isInt() || node.isLong()) return node.asLong();
+        if (node.isFloat() || node.isDouble() || node.isBigDecimal()) return node.asDouble();
+        if (node.isBoolean()) return node.asBoolean();
+        if (node.isArray()) {
+            List<Object> values = new ArrayList<>();
+            node.forEach(item -> values.add(jsonNodeToJava(item)));
+            return values;
+        }
+        if (node.isObject()) {
+            Map<String, Object> map = new HashMap<>();
+            node.fields().forEachRemaining(entry -> map.put(entry.getKey(), jsonNodeToJava(entry.getValue())));
+            return map;
+        }
+        return node.asText();
     }
 
     @Override

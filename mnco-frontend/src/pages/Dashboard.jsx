@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import api from '../api/axios';
-import { Play, Square, MoreHorizontal, Plus, FlaskConical, Monitor, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { Play, Square, MoreHorizontal, Monitor, ExternalLink, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [labNodes, setLabNodes] = useState({});
   const [expandedLab, setExpandedLab] = useState(null);
+  const [now, setNow] = useState(Date.now());
 
   const fetchLabs = async () => {
     try {
@@ -49,6 +50,11 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const timerInterval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timerInterval);
+  }, []);
+
   const handleStart = async (templateId) => {
     try {
       await api.post(`/instances/template/${templateId}/start`);
@@ -69,7 +75,7 @@ const Dashboard = () => {
   };
 
   const handleReset = async (templateId) => {
-    if (!window.confirm("Are you sure? This will wipe all node configurations and reset the lab to its original state.")) return;
+    if (!window.confirm("Are you sure? This will wipe all node configurations and reset the lab to its original state?")) return;
     try {
       await api.post(`/instances/template/${templateId}/reset`);
       setExpandedLab(null);
@@ -78,6 +84,32 @@ const Dashboard = () => {
       alert('Failed to reset lab: ' + (error.response?.data?.message || error.message));
     }
   };
+
+  const handleResetTimer = async (templateId) => {
+    try {
+      await api.post(`/instances/template/${templateId}/timer/reset`);
+      fetchLabs();
+    } catch (error) {
+      alert('Failed to reset timer: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const getRemainingSeconds = (lab) => {
+    if (lab.status !== 'RUNNING' || !lab.expiresAt) {
+      return null;
+    }
+    const remainingMs = new Date(lab.expiresAt).getTime() - now;
+    return Math.max(0, Math.floor(remainingMs / 1000));
+  };
+
+  const formatCountdown = (seconds) => {
+    if (seconds === null) return '--:--';
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
+
+  const runningLabTemplateId = labs.find(lab => lab.status === 'RUNNING')?.templateId;
 
   return (
     <div className="app-layout">
@@ -111,6 +143,7 @@ const Dashboard = () => {
                       <div className="stat"><span>CPU</span> <strong>{lab.cpuAllocated}</strong></div>
                       <div className="stat"><span>RAM</span> <strong>{lab.ramAllocated}GB</strong></div>
                       <div className="stat"><span>Status</span> <strong className={`status-${lab.status.toLowerCase()}`}>{lab.status}</strong></div>
+                      <div className="stat"><span>Timer</span> <strong className={getRemainingSeconds(lab) === 0 ? 'timer-expired' : ''}>{formatCountdown(getRemainingSeconds(lab))}</strong></div>
                     </div>
 
                     <div className="lab-actions">
@@ -124,11 +157,19 @@ const Dashboard = () => {
                             {expandedLab === lab.templateId ? 'Hide Nodes' : 'View Nodes'}
                           </button>
                           <button className="action-btn-main outline" onClick={() => handleReset(lab.templateId)}>
-                             Reset
+                              Reset Lab
+                          </button>
+                          <button className="action-btn-main secondary" onClick={() => handleResetTimer(lab.templateId)}>
+                            <RotateCcw size={16} /> Reset Timer
                           </button>
                         </>
                       ) : (
-                        <button className="action-btn-main start" onClick={() => handleStart(lab.templateId)}>
+                        <button
+                          className="action-btn-main start"
+                          onClick={() => handleStart(lab.templateId)}
+                          disabled={Boolean(runningLabTemplateId && runningLabTemplateId !== lab.templateId)}
+                          title={runningLabTemplateId && runningLabTemplateId !== lab.templateId ? 'Stop your running lab before starting another one.' : ''}
+                        >
                           <Play size={18} fill="currentColor" /> Start
                         </button>
                       )}

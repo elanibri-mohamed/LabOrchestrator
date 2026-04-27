@@ -15,6 +15,7 @@ public class LabInstance {
     private InstanceStatus status;
     private Instant startedAt;
     private Instant stoppedAt;
+    private Instant expiresAt;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -28,6 +29,7 @@ public class LabInstance {
         this.status = builder.status;
         this.startedAt = builder.startedAt;
         this.stoppedAt = builder.stoppedAt;
+        this.expiresAt = builder.expiresAt;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
     }
@@ -59,6 +61,9 @@ public class LabInstance {
     public Instant getStoppedAt() { return stoppedAt; }
     public void setStoppedAt(Instant stoppedAt) { this.stoppedAt = stoppedAt; }
 
+    public Instant getExpiresAt() { return expiresAt; }
+    public void setExpiresAt(Instant expiresAt) { this.expiresAt = expiresAt; }
+
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
@@ -77,6 +82,7 @@ public class LabInstance {
         private InstanceStatus status = InstanceStatus.STOPPED;
         private Instant startedAt;
         private Instant stoppedAt;
+        private Instant expiresAt;
         private Instant createdAt = Instant.now();
         private Instant updatedAt = Instant.now();
 
@@ -87,6 +93,7 @@ public class LabInstance {
         public Builder status(InstanceStatus status) { this.status = status; return this; }
         public Builder startedAt(Instant startedAt) { this.startedAt = startedAt; return this; }
         public Builder stoppedAt(Instant stoppedAt) { this.stoppedAt = stoppedAt; return this; }
+        public Builder expiresAt(Instant expiresAt) { this.expiresAt = expiresAt; return this; }
         public Builder createdAt(Instant createdAt) { this.createdAt = createdAt; return this; }
         public Builder updatedAt(Instant updatedAt) { this.updatedAt = updatedAt; return this; }
 

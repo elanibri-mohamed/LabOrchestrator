@@ -32,9 +32,11 @@ public class LabIdleStopScheduler {
     @Value("${quota.lab-idle-timeout-minutes:120}")
     private int idleTimeoutMinutes;
 
-    @Scheduled(fixedDelayString = "900000") // every 15 minutes
+    @Scheduled(fixedDelayString = "60000") // every minute
     @Transactional
     public void stopIdleLabs() {
+        stopExpiredLabs();
+
         Instant idleThreshold = Instant.now().minus(idleTimeoutMinutes, ChronoUnit.MINUTES);
         List<LabInstance> idleInstances = labInstanceRepository.findRunningLabsIdleSince(idleThreshold);
 
@@ -51,11 +53,41 @@ public class LabIdleStopScheduler {
                 eveNgService.stopLab(instance.getEveInstancePath());
                 instance.setStatus(InstanceStatus.STOPPED);
                 instance.setStoppedAt(Instant.now());
+                instance.setExpiresAt(null);
                 labInstanceRepository.save(instance);
                 log.info("Auto-stopped instance id={}", instance.getId());
             } catch (Exception ex) {
                 log.error("Failed to auto-stop instance id={}: {}", instance.getId(), ex.getMessage());
                 instance.setStatus(InstanceStatus.ERROR);
+                instance.setExpiresAt(null);
+                labInstanceRepository.save(instance);
+            }
+        }
+    }
+
+    private void stopExpiredLabs() {
+        Instant now = Instant.now();
+        List<LabInstance> expiredInstances = labInstanceRepository.findRunningLabsExpiredAtOrBefore(now);
+
+        if (expiredInstances.isEmpty()) {
+            return;
+        }
+
+        log.info("Auto-stopping {} expired instance(s)", expiredInstances.size());
+
+        for (LabInstance instance : expiredInstances) {
+            try {
+                log.info("Auto-stopping expired instance: id={}, expiresAt={}", instance.getId(), instance.getExpiresAt());
+                eveNgService.stopLab(instance.getEveInstancePath());
+                instance.setStatus(InstanceStatus.STOPPED);
+                instance.setStoppedAt(now);
+                instance.setExpiresAt(null);
+                labInstanceRepository.save(instance);
+                log.info("Auto-stopped expired instance id={}", instance.getId());
+            } catch (Exception ex) {
+                log.error("Failed to auto-stop expired instance id={}: {}", instance.getId(), ex.getMessage());
+                instance.setStatus(InstanceStatus.ERROR);
+                instance.setExpiresAt(null);
                 labInstanceRepository.save(instance);
             }
         }

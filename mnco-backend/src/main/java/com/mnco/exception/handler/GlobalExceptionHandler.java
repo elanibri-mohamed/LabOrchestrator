@@ -4,6 +4,7 @@ import com.mnco.application.dto.response.ErrorResponse;
 import com.mnco.exception.custom.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -71,6 +72,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(ErrorResponse.of(422, "Business Rule Violation", ex.getMessage(), request.getRequestURI()));
     }
+
+        @ExceptionHandler(DataIntegrityViolationException.class)
+        public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex,
+                                                                                                                         HttpServletRequest request) {
+                String message = "Request violates database constraints";
+                Throwable cause = ex.getMostSpecificCause();
+                if (cause != null && cause.getMessage() != null && cause.getMessage().contains("chk_role")) {
+                        message = "Invalid role value. Allowed roles are ADMIN, TEACHER, STUDENT";
+                }
+
+                log.warn("Data integrity violation: {}", ex.getMessage());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(ErrorResponse.of(400, "Bad Request", message, request.getRequestURI()));
+        }
 
     // ── 502 EVE-NG Integration ────────────────────────────────────────────────
 

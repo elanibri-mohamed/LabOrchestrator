@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LabInstanceService implements LabInstanceUseCase {
 
+    private static final long LAB_TIMER_DURATION_SECONDS = 3600;
+
     private final LabInstanceRepository instanceRepository;
     private final LabTemplateRepository templateRepository;
     private final LabAssignmentRepository assignmentRepository;
@@ -53,10 +55,26 @@ public class LabInstanceService implements LabInstanceUseCase {
         LabInstance instance = instanceRepository.findByTemplateIdAndUserId(templateId, userId)
                 .orElseGet(() -> createNewInstance(template, userId));
 
+        instanceRepository.findRunningByUserId(userId)
+                .filter(running -> !running.getTemplateId().equals(templateId))
+                .ifPresent(running -> {
+                    throw new InvalidLabStateException("Only one lab can run at a time for each user");
+                });
+
+        if (instance.isRunning()) {
+            if (instance.getExpiresAt() == null) {
+                instance.setExpiresAt(Instant.now().plusSeconds(LAB_TIMER_DURATION_SECONDS));
+                instance = instanceRepository.save(instance);
+            }
+            return toResponse(template, instance);
+        }
+
         try {
             eveNgService.startLab(instance.getEveInstancePath());
             instance.setStatus(InstanceStatus.RUNNING);
             instance.setStartedAt(Instant.now());
+            instance.setStoppedAt(null);
+            instance.setExpiresAt(Instant.now().plusSeconds(LAB_TIMER_DURATION_SECONDS));
             LabInstance saved = instanceRepository.save(instance);
             return toResponse(template, saved);
         } catch (Exception ex) {
@@ -78,6 +96,7 @@ public class LabInstanceService implements LabInstanceUseCase {
             eveNgService.stopLab(instance.getEveInstancePath());
             instance.setStatus(InstanceStatus.STOPPED);
             instance.setStoppedAt(Instant.now());
+            instance.setExpiresAt(null);
             LabInstance saved = instanceRepository.save(instance);
             LabTemplate template = templateRepository.findById(templateId).get();
             return toResponse(template, saved);
@@ -108,8 +127,30 @@ public class LabInstanceService implements LabInstanceUseCase {
         instance.setStatus(InstanceStatus.STOPPED);
         instance.setStartedAt(null);
         instance.setStoppedAt(null);
+        instance.setExpiresAt(null);
         LabInstance saved = instanceRepository.save(instance);
         
+        return toResponse(template, saved);
+    }
+
+    @Override
+    @Transactional
+    public LabResponse resetTimer(UUID templateId, UUID userId) {
+        log.info("User {} resetting timer for template {}", userId, templateId);
+
+        LabInstance instance = instanceRepository.findByTemplateIdAndUserId(templateId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Instance not found"));
+
+        if (!instance.isRunning()) {
+            throw new InvalidLabStateException("Timer can only be reset for a running lab");
+        }
+
+        instance.setExpiresAt(Instant.now().plusSeconds(LAB_TIMER_DURATION_SECONDS));
+        LabInstance saved = instanceRepository.save(instance);
+
+        LabTemplate template = templateRepository.findById(templateId)
+                .orElseThrow(() -> new ResourceNotFoundException("Template not found"));
+
         return toResponse(template, saved);
     }
 
@@ -190,6 +231,7 @@ public class LabInstanceService implements LabInstanceUseCase {
                 template.getStorageAllocated(),
                 instance != null ? instance.getStartedAt() : null,
                 instance != null ? instance.getStoppedAt() : null,
+                instance != null ? instance.getExpiresAt() : null,
                 instance != null ? instance.getCreatedAt() : template.getCreatedAt()
         );
     }
