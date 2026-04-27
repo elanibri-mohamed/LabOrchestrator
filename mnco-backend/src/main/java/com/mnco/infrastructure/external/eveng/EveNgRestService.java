@@ -140,36 +140,134 @@ public class EveNgRestService implements EveNgService {
         String cookie = authenticate();
 
         try {
-            // 1. Export source
-            byte[] exportedLab = webClient.get()
-                    .uri("/api/labs{id}/export", sourcePath)
+            // 1. Get source lab info
+            JsonNode sourceLab = webClient.get()
+                    .uri("/api/labs" + sourcePath)
                     .header("Cookie", cookie)
-                    .retrieve()
-                    .bodyToMono(byte[].class)
-                    .block();
-
-            if (exportedLab == null) throw new EveNgIntegrationException("Export failed");
-
-            // 2. Ensure target folder exists
-            String folderPath = targetPath.substring(0, targetPath.lastIndexOf("/"));
-            createFolder(folderPath);
-
-            // 3. Import to target
-            // In EVE-NG, import usually goes to the "root" of the API call or a specific path if specified
-            // We'll try to import and then RENAME if it doesn't support direct path import.
-            // Actually, EVE-NG import API takes the path in the JSON payload sometimes.
-            
-            String fileName = targetPath.substring(targetPath.lastIndexOf("/") + 1).replace(".unl", "");
-            
-            webClient.post()
-                    .uri("/api/labs/import")
-                    .header("Cookie", cookie)
-                    .bodyValue(Map.of("path", folderPath, "data", exportedLab, "name", fileName))
                     .retrieve()
                     .bodyToMono(JsonNode.class)
                     .block();
+            
+            if (sourceLab == null || !sourceLab.has("data")) throw new EveNgIntegrationException("Source lab not found");
+            JsonNode labData = sourceLab.get("data");
+
+            // 2. Ensure target folder exists
+            String folderPath = targetPath.substring(0, targetPath.lastIndexOf("/"));
+            if (folderPath.isEmpty()) folderPath = "/";
+            createFolderInternal(folderPath, cookie);
+
+            // 3. Delete target lab if it already exists to prevent 412 Precondition Failed
+            try {
+                webClient.delete()
+                        .uri("/api/labs" + targetPath)
+                        .header("Cookie", cookie)
+                        .retrieve()
+                        .toBodilessEntity()
+                        .block();
+            } catch (Exception ignored) {
+                // Ignore if it doesn't exist
+            }
+
+            // 4. Create target lab
+            String fileName = targetPath.substring(targetPath.lastIndexOf("/") + 1).replace(".unl", "");
+            Map<String, Object> newLabPayload = Map.of(
+                    "path", folderPath,
+                    "name", fileName,
+                    "version", labData.path("version").asText("1"),
+                    "author", labData.path("author").asText(""),
+                    "description", labData.path("description").asText(""),
+                    "body", labData.path("body").asText("")
+            );
+
+            webClient.post()
+                    .uri("/api/labs")
+                    .header("Cookie", cookie)
+                    .bodyValue(newLabPayload)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+
+            // 4. Copy Networks
+            JsonNode networksResponse = webClient.get()
+                    .uri("/api/labs" + sourcePath + "/networks")
+                    .header("Cookie", cookie)
+                    .retrieve()
+                    .bodyToMono(JsonNode.class)
+                    .block();
+            
+            if (networksResponse != null && networksResponse.has("data")) {
+                networksResponse.get("data").fields().forEachRemaining(entry -> {
+                    JsonNode net = entry.getValue();
+                    java.util.Map<String, Object> netPayload = new java.util.HashMap<>();
+                    net.fields().forEachRemaining(f -> {
+                        if (!"id".equals(f.getKey())) {
+                            if (f.getValue().isNumber()) {
+                                netPayload.put(f.getKey(), f.getValue().asInt());
+                            } else {
+                                netPayload.put(f.getKey(), f.getValue().asText());
+                            }
+                        }
+                    });
                     
+                    webClient.post()
+                            .uri("/api/labs" + targetPath + "/networks")
+                            .header("Cookie", cookie)
+                            .bodyValue(netPayload)
+                            .retrieve()
+                            .toBodilessEntity()
+                            .block();
+                });
+            }
+
+            // 5. Copy Nodes
+            JsonNode nodesResponse = webClient.get()
+                    .uri("/api/labs" + sourcePath + "/nodes")
+                    .header("Cookie", cookie)
+                    .retrieve()
+                    .bodyToMono(JsonNode.class)
+                    .block();
+            
+            if (nodesResponse != null && nodesResponse.has("data")) {
+                nodesResponse.get("data").fields().forEachRemaining(entry -> {
+                    JsonNode node = entry.getValue();
+                    java.util.Map<String, Object> nodePayload = new java.util.HashMap<>();
+                    node.fields().forEachRemaining(f -> {
+                        if (!"id".equals(f.getKey()) && !"url".equals(f.getKey()) && !"status".equals(f.getKey())) {
+                            if (f.getValue().isNumber()) {
+                                nodePayload.put(f.getKey(), f.getValue().asInt());
+                            } else {
+                                nodePayload.put(f.getKey(), f.getValue().asText());
+                            }
+                        }
+                    });
+
+                    webClient.post()
+                            .uri("/api/labs" + targetPath + "/nodes")
+                            .header("Cookie", cookie)
+                            .bodyValue(nodePayload)
+                            .retrieve()
+                            .toBodilessEntity()
+                            .block();
+                });
+            }
+
+            // 6. Export nodes configs (saves to the .unl)
+            try {
+                webClient.get()
+                        .uri("/api/labs" + targetPath + "/nodes/export")
+                        .header("Cookie", cookie)
+                        .retrieve()
+                        .toBodilessEntity()
+                        .block();
+            } catch (Exception ex) {
+                log.warn("Failed to export node configs for cloned lab (ignoring): {}", ex.getMessage());
+            }
+
             log.info("Lab copied successfully to {}", targetPath);
+        } catch (org.springframework.web.reactive.function.client.WebClientResponseException ex) {
+            String responseBody = ex.getResponseBodyAsString();
+            log.error("WebClient error during copyLab: {} - Body: {}", ex.getMessage(), responseBody);
+            throw new EveNgIntegrationException("Copy lab failed: " + ex.getMessage() + " | Response: " + responseBody, ex);
         } catch (Exception ex) {
             throw new EveNgIntegrationException("Copy lab failed: " + ex.getMessage(), ex);
         }
@@ -177,10 +275,13 @@ public class EveNgRestService implements EveNgService {
 
     @Override
     public void createFolder(String path) {
+        createFolderInternal(path, authenticate());
+    }
+
+    private void createFolderInternal(String path, String cookie) {
         if (path == null || path.equals("/") || path.isEmpty()) return;
         
         log.info("Ensuring folder exists: {}", path);
-        String cookie = authenticate();
         try {
             // Split path into parts and create recursively
             String[] parts = path.replaceFirst("^/", "").split("/");
