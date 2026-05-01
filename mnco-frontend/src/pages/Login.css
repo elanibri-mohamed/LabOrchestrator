@@ -40,6 +40,30 @@
   text-align: center;
 }
 
+.login-role-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.login-role-tab {
+  border: 1px solid var(--fb-border);
+  background: #f0f2f5;
+  color: var(--fb-text-primary);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 10px 6px;
+  cursor: pointer;
+}
+
+.login-role-tab.active {
+  background: #e7f3ff;
+  border-color: var(--fb-blue);
+  color: var(--fb-blue);
+}
+
 .form-group {
   margin-bottom: 12px;
 }
@@ -91,5 +115,9 @@
   
   .login-card-wrapper {
     margin: 0 auto;
+  }
+
+  .login-role-tabs {
+    grid-template-columns: 1fr;
   }
 }

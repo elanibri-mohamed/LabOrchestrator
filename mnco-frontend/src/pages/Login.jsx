@@ -22,7 +22,7 @@ const Login = () => {
       await login(credentials.usernameOrEmail, credentials.password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      setError(err.response?.data?.message || err.message || 'Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +43,7 @@ const Login = () => {
                 <input
                   type="text"
                   name="usernameOrEmail"
-                  placeholder="Email or Username"
+                  placeholder="Email or username"
                   value={credentials.usernameOrEmail}
                   onChange={handleChange}
                   required

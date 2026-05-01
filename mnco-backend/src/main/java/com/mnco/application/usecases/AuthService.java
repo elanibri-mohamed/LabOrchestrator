@@ -158,7 +158,12 @@ public class AuthService implements AuthUseCase {
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser(String token) {
         log.info("Get current user attempt");
-        String username = jwtService.extractUsername(token);
+        String normalizedToken = token == null ? null : token.trim();
+        if (normalizedToken != null && normalizedToken.toLowerCase().startsWith("bearer ")) {
+            normalizedToken = normalizedToken.substring(7).trim();
+        }
+
+        String username = jwtService.extractUsername(normalizedToken);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
         return userMapper.toResponse(user);

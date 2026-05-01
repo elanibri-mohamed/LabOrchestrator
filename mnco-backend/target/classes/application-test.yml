@@ -16,3 +16,7 @@ spring:
 jwt:
   secret: test-secret-key-that-is-at-least-256-bits-long-for-hmac-sha
   expiration-ms: 3600000
+
+eveng:
+  clone:
+    strict-mode: false

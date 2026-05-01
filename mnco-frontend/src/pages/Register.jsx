@@ -3,8 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
 import './Login.css'; // Reuse Login styles for consistency
 
+const REGISTER_ROLE_OPTIONS = [
+  { value: 'STUDENT', label: 'Register as Student' },
+  { value: 'TEACHER', label: 'Register as Teacher' },
+];
+
 const Register = () => {
-  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', email: '', password: '', role: 'STUDENT' });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -40,6 +45,21 @@ const Register = () => {
           <div className="card login-card fade-in">
             <h2 style={{marginBottom: '20px'}}>Create a new account</h2>
             <form onSubmit={handleSubmit}>
+              <div className="login-role-tabs" role="radiogroup" aria-label="Register role">
+                {REGISTER_ROLE_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={formData.role === option.value}
+                    className={`login-role-tab ${formData.role === option.value ? 'active' : ''}`}
+                    onClick={() => setFormData({ ...formData, role: option.value })}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+
               <div className="form-group">
                 <input
                   type="text"
@@ -74,7 +94,7 @@ const Register = () => {
               {error && <div className="error-message">{error}</div>}
               
               <button type="submit" className="btn-primary" disabled={isLoading} style={{backgroundColor: '#42b72a'}}>
-                {isLoading ? 'Creating account...' : 'Sign Up'}
+                {isLoading ? 'Creating account...' : `Sign Up as ${formData.role === 'TEACHER' ? 'Teacher' : 'Student'}`}
               </button>
               
               <hr className="divider" />

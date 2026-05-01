@@ -58,6 +58,8 @@ eveng:
   base-url: ${EVENG_BASE_URL:http://10.10.30.10}
   username: ${EVENG_USERNAME:admin}
   password: ${EVENG_PASSWORD:eve}
+  clone:
+    strict-mode: ${EVENG_CLONE_STRICT_MODE:false}
   api-path: /api
   connection-timeout-ms: 5000
   read-timeout-ms: 30000
