@@ -2,7 +2,9 @@ package com.mnco.infrastructure.persistence;
 
 import com.mnco.application.mapper.LabTemplateMapper;
 import com.mnco.domain.entities.LabTemplate;
+import com.mnco.domain.entities.LabTemplateStatus;
 import com.mnco.domain.repository.LabTemplateRepository;
+import com.mnco.infrastructure.persistence.entity.LabTemplateJpaEntity;
 import com.mnco.infrastructure.persistence.repository.LabTemplateJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,9 @@ public class LabTemplateRepositoryAdapter implements LabTemplateRepository {
 
     @Override
     public LabTemplate save(LabTemplate template) {
-        return mapper.toDomain(jpaRepository.save(mapper.toJpaEntity(template)));
+        LabTemplateJpaEntity entity = mapper.toJpaEntity(template);
+        LabTemplateJpaEntity saved = jpaRepository.save(entity);
+        return mapper.toDomain(saved);
     }
 
     @Override
@@ -29,20 +33,23 @@ public class LabTemplateRepositoryAdapter implements LabTemplateRepository {
     }
 
     @Override
-    public List<LabTemplate> findAllPublic() {
-        return jpaRepository.findByIsPublicTrue().stream()
-                .map(mapper::toDomain).toList();
+    public List<LabTemplate> findAll() {
+        return jpaRepository.findAll().stream().map(mapper::toDomain).toList();
     }
 
     @Override
-    public List<LabTemplate> findByAuthorId(UUID authorId) {
-        return jpaRepository.findByAuthorId(authorId).stream()
-                .map(mapper::toDomain).toList();
+    public List<LabTemplate> findAllByStatus(LabTemplateStatus status) {
+        return jpaRepository.findAllByStatus(status).stream().map(mapper::toDomain).toList();
     }
 
     @Override
-    public boolean existsByName(String name) {
-        return jpaRepository.existsByName(name);
+    public Optional<LabTemplate> findByEveTemplatePath(String path) {
+        return jpaRepository.findByEveTemplatePath(path).map(mapper::toDomain);
+    }
+
+    @Override
+    public Optional<LabTemplate> findByName(String name) {
+        return jpaRepository.findByName(name).map(mapper::toDomain);
     }
 
     @Override

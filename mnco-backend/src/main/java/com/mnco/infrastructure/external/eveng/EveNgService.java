@@ -1,6 +1,5 @@
 package com.mnco.infrastructure.external.eveng;
 
-import com.mnco.domain.entities.Lab;
 import com.mnco.infrastructure.external.eveng.model.EveNgCloneResult;
 import com.mnco.infrastructure.external.eveng.model.EveNgLabInfo;
 import com.mnco.infrastructure.external.eveng.model.EveNgLabResult;
@@ -8,72 +7,78 @@ import com.mnco.infrastructure.external.eveng.model.EveNgNodeInfo;
 import com.mnco.infrastructure.external.eveng.model.EveNgNodeStatus;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Port for all EVE-NG orchestration operations.
- * Two implementations:
- *   - EveNgRestService      — real HTTP calls to EVE-NG API v2 (production)
- *   - EveNgSimulatedService — in-memory simulation (dev / test)
  */
 public interface EveNgService {
-
-    /** Create a new lab topology in EVE-NG. */
-    EveNgLabResult createTopology(Lab lab);
 
     /** Start all nodes within a lab. */
     void startLab(String evengLabId);
 
+    /** Start all nodes within a lab using explicit EVE-NG credentials. */
+    void startLab(String evengLabId, String username, String password);
+
     /** Stop all nodes within a lab. */
     void stopLab(String evengLabId);
+
+    /** Stop all nodes within a lab using explicit EVE-NG credentials. */
+    void stopLab(String evengLabId, String username, String password);
 
     /** Permanently delete a lab topology from EVE-NG. */
     void deleteLab(String evengLabId);
 
-    /**
-     * Deep-copy a lab topology to a new path (FR-LM-06).
-     * The clone is fully independent — modifying the original does not affect the clone.
-     *
-     * @param sourceEvengLabId  EVE-NG path of the source lab
-     * @param cloneName         sanitized name for the new topology file
-     * @param cloneId           platform UUID to embed in the new path (uniqueness)
+    /** Permanently delete a lab topology from EVE-NG using explicit credentials. */
+    void deleteLab(String evengLabId, String username, String password);
+
+    /** 
+     * Copy a template to a specific instance path.
+     * @param sourcePath absolute EVE-NG path (e.g. /templates/lab1.unl)
+     * @param targetPath absolute EVE-NG path (e.g. /instances/user1/lab1.unl)
      */
-    EveNgCloneResult cloneLab(String sourceEvengLabId, String cloneName, String cloneId);
+    void copyLab(String sourcePath, String targetPath);
+
+    /** Copy a template to a specific instance path using explicit credentials. */
+    void copyLab(String sourcePath, String targetPath, String username, String password);
+
+    /** Create a folder if it doesn't exist. */
+    void createFolder(String path);
+
+    /** Create a folder if it doesn't exist using explicit credentials. */
+    void createFolder(String path, String username, String password);
+
+    /** Create a user in EVE-NG. */
+    void createUser(String username, String password, String role);
 
     /** Retrieve status of all nodes in a lab. */
     List<EveNgNodeStatus> getLabNodeStatuses(String evengLabId);
 
-    /**
-     * Get console connection details for a single node (FR-LM-09).
-     *
-     * @param evengLabId  EVE-NG lab path
-     * @param nodeId      node identifier within the lab
-     * @return console details (protocol, host, port, webSocketUrl)
-     */
+    /** Retrieve status of all nodes in a lab using explicit credentials. */
+    List<EveNgNodeStatus> getLabNodeStatuses(String evengLabId, String username, String password);
+
+    /** Get console connection details for a single node. */
     EveNgNodeConsoleInfo getNodeConsoleInfo(String evengLabId, String nodeId);
 
-    /**
-     * Retrieve all labs available in EVE-NG server.
-     * Used for lab discovery and synchronization (read-only mode).
-     *
-     * @return list of all labs found in EVE-NG
-     */
+    /** Get console connection details for a single node using explicit credentials. */
+    EveNgNodeConsoleInfo getNodeConsoleInfo(String evengLabId, String nodeId, String username, String password);
+
+    /** Retrieve all labs available in EVE-NG server. */
     List<EveNgLabInfo> getAllLabs();
 
-    /**
-     * Retrieve details for a specific lab by its EVE-NG path.
-     *
-     * @param evengLabPath EVE-NG lab path (e.g., "/lab-name.unl")
-     * @return lab details if found
-     */
-    Optional<EveNgLabInfo> getLabByPath(String evengLabPath);
+    /** Retrieve all labs available in EVE-NG server using explicit credentials. */
+    List<EveNgLabInfo> getAllLabs(String username, String password);
 
-    /**
-     * Retrieve all nodes within a lab.
-     * Used to parse resource specifications from node configurations.
-     *
-     * @param evengLabId EVE-NG lab path
-     * @return list of nodes in the lab
-     */
+    /** Retrieve all nodes within a lab. */
     List<EveNgNodeInfo> getLabNodes(String evengLabId);
+
+    /** Retrieve all nodes within a lab using explicit credentials. */
+    List<EveNgNodeInfo> getLabNodes(String evengLabId, String username, String password);
+
+    /** Retrieve all nodes within a lab with raw details (including URLs). */
+    Map<String, Object> getRawLabNodes(String evengLabId);
+
+    /** Retrieve all nodes within a lab with raw details using explicit credentials. */
+    Map<String, Object> getRawLabNodes(String evengLabId, String username, String password);
 }

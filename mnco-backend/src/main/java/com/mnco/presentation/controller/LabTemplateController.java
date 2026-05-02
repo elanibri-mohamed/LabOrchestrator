@@ -1,18 +1,15 @@
 package com.mnco.presentation.controller;
 
-import com.mnco.application.dto.request.CreateLabTemplateRequest;
+import com.mnco.application.dto.request.UpdateLabDescriptionRequest;
 import com.mnco.application.dto.response.ApiResponse;
-import com.mnco.application.dto.response.LabTemplateResponse;
+import com.mnco.application.dto.response.LabResponse;
 import com.mnco.application.usecases.LabTemplateUseCase;
-import com.mnco.security.service.UserDetailsServiceImpl.MncoUserDetails;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,38 +24,30 @@ public class LabTemplateController {
     private final LabTemplateUseCase templateUseCase;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<LabTemplateResponse>>> listPublicTemplates() {
-        return ResponseEntity.ok(ApiResponse.success(templateUseCase.getPublicTemplates()));
-    }
-
-    @GetMapping("/mine")
-    public ResponseEntity<ApiResponse<List<LabTemplateResponse>>> listMyTemplates(
-            @AuthenticationPrincipal MncoUserDetails principal) {
-        return ResponseEntity.ok(ApiResponse.success(
-                templateUseCase.getMyTemplates(principal.getUserId())));
+    public ResponseEntity<ApiResponse<List<LabResponse>>> listTemplates() {
+        return ResponseEntity.ok(ApiResponse.success(templateUseCase.getAllTemplates()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<LabTemplateResponse>> getTemplate(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<LabResponse>> getTemplate(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(templateUseCase.getTemplateById(id)));
     }
 
-    @PostMapping
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
-    public ResponseEntity<ApiResponse<LabTemplateResponse>> createTemplate(
-            @Valid @RequestBody CreateLabTemplateRequest request,
-            @AuthenticationPrincipal MncoUserDetails principal) {
-        log.info("POST /api/v1/templates — author={}", principal.getUserId());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Template created",
-                        templateUseCase.createTemplate(request, principal.getUserId())));
+    @PatchMapping("/{id}/description")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public ResponseEntity<ApiResponse<LabResponse>> updateTemplateDescription(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateLabDescriptionRequest request) {
+        log.info("Updating template description for template={}", id);
+        LabResponse updated = templateUseCase.updateTemplateDescription(id, request.description());
+        return ResponseEntity.ok(ApiResponse.success("Template description updated", updated));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTemplate(
-            @PathVariable UUID id,
-            @AuthenticationPrincipal MncoUserDetails principal) {
-        templateUseCase.deleteTemplate(id, principal.getUserId(), principal.isAdmin());
-        return ResponseEntity.noContent().build();
+    @PostMapping("/sync")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<List<LabResponse>>> syncTemplates() {
+        log.info("Admin initiated template sync from EVE-NG");
+        List<LabResponse> synced = templateUseCase.discoverTemplatesFromEveNg();
+        return ResponseEntity.ok(ApiResponse.success("Sync completed: " + synced.size() + " templates", synced));
     }
 }

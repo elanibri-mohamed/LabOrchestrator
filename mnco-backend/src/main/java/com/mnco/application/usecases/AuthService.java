@@ -14,6 +14,9 @@ import com.mnco.exception.custom.DuplicateResourceException;
 import com.mnco.exception.custom.InvalidCredentialsException;
 import com.mnco.exception.custom.ResourceNotFoundException;
 import com.mnco.security.service.JwtService;
+import com.mnco.security.service.EveNgCredentialCipherService;
+import com.mnco.security.service.EveNgUsernameService;
+import com.mnco.infrastructure.external.eveng.EveNgService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,9 @@ public class AuthService implements AuthUseCase {
     private final JwtService jwtService;
     private final UserMapper userMapper;
     private final AuditLogService auditLogService;
+    private final EveNgService eveNgService;
+    private final EveNgCredentialCipherService eveNgCredentialCipherService;
+    private final EveNgUsernameService eveNgUsernameService;
 
     @Override
     @Transactional
@@ -59,6 +65,7 @@ public class AuthService implements AuthUseCase {
                 .username(request.username())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
+            .evengPasswordEncrypted(eveNgCredentialCipherService.encrypt(request.password()))
                 .role(userRole)
                 .enabled(true)
                 .build();
@@ -66,13 +73,21 @@ public class AuthService implements AuthUseCase {
         User saved = userRepository.save(user);
         log.info("User registered: id={}, username='{}'", saved.getId(), saved.getUsername());
 
+        // Sync to EVE-NG
+        try {
+            String eveNgUsername = eveNgUsernameService.toEveNgUsername(saved.getUsername());
+            eveNgService.createUser(eveNgUsername, request.password(), saved.getRole().name());
+        } catch (Exception e) {
+            log.warn("EVE-NG user sync failed during registration: {}", e.getMessage());
+        }
+
         String token = jwtService.generateToken(saved.getUsername(), saved.getRole().name());
         return AuthResponse.of(token, jwtService.getExpirationMs(),
                 saved.getId(), saved.getUsername(), saved.getEmail(), saved.getRole());
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         log.info("Login attempt: identifier='{}'", request.usernameOrEmail());
         String ip = resolveClientIp();
@@ -96,8 +111,19 @@ public class AuthService implements AuthUseCase {
             throw new InvalidCredentialsException("Invalid credentials");
         }
 
+        user.setEvengPasswordEncrypted(eveNgCredentialCipherService.encrypt(request.password()));
+        user = userRepository.save(user);
+
         log.info("User authenticated: id={}, username='{}'", user.getId(), user.getUsername());
         auditLogService.logLogin(user.getId(), user.getUsername(), ip, ua);
+
+        // Ensure user exists in EVE-NG (Lazy Sync)
+        try {
+            String eveNgUsername = eveNgUsernameService.toEveNgUsername(user.getUsername());
+            eveNgService.createUser(eveNgUsername, request.password(), user.getRole().name());
+        } catch (Exception e) {
+            log.warn("EVE-NG user sync failed during login: {}", e.getMessage());
+        }
 
         String token = jwtService.generateToken(user.getUsername(), user.getRole().name());
         return AuthResponse.of(token, jwtService.getExpirationMs(),
@@ -142,7 +168,12 @@ public class AuthService implements AuthUseCase {
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser(String token) {
         log.info("Get current user attempt");
-        String username = jwtService.extractUsername(token);
+        String normalizedToken = token == null ? null : token.trim();
+        if (normalizedToken != null && normalizedToken.toLowerCase().startsWith("bearer ")) {
+            normalizedToken = normalizedToken.substring(7).trim();
+        }
+
+        String username = jwtService.extractUsername(normalizedToken);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
         return userMapper.toResponse(user);

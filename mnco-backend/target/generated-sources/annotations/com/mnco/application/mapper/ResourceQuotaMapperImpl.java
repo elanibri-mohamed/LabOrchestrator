@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-19T01:27:46+0100",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 25.0.2 (Oracle Corporation)"
+    date = "2026-05-01T16:49:21+0100",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.2 (Amazon.com Inc.)"
 )
 @Component
 public class ResourceQuotaMapperImpl implements ResourceQuotaMapper {
@@ -45,16 +45,16 @@ public class ResourceQuotaMapperImpl implements ResourceQuotaMapper {
         ResourceQuotaJpaEntity.ResourceQuotaJpaEntityBuilder resourceQuotaJpaEntity = ResourceQuotaJpaEntity.builder();
 
         resourceQuotaJpaEntity.id( quota.getId() );
-        resourceQuotaJpaEntity.maxCpu( quota.getMaxCpu() );
+        resourceQuotaJpaEntity.userId( quota.getUserId() );
         resourceQuotaJpaEntity.maxLabs( quota.getMaxLabs() );
+        resourceQuotaJpaEntity.maxCpu( quota.getMaxCpu() );
         resourceQuotaJpaEntity.maxRamGb( quota.getMaxRamGb() );
         resourceQuotaJpaEntity.maxStorageGb( quota.getMaxStorageGb() );
-        resourceQuotaJpaEntity.updatedAt( quota.getUpdatedAt() );
-        resourceQuotaJpaEntity.usedCpu( quota.getUsedCpu() );
         resourceQuotaJpaEntity.usedLabs( quota.getUsedLabs() );
+        resourceQuotaJpaEntity.usedCpu( quota.getUsedCpu() );
         resourceQuotaJpaEntity.usedRamGb( quota.getUsedRamGb() );
         resourceQuotaJpaEntity.usedStorageGb( quota.getUsedStorageGb() );
-        resourceQuotaJpaEntity.userId( quota.getUserId() );
+        resourceQuotaJpaEntity.updatedAt( quota.getUpdatedAt() );
 
         return resourceQuotaJpaEntity.build();
     }

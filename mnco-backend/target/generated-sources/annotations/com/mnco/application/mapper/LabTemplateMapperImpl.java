@@ -1,6 +1,7 @@
 package com.mnco.application.mapper;
 
-import com.mnco.application.dto.response.LabTemplateResponse;
+import com.mnco.application.dto.response.LabResponse;
+import com.mnco.domain.entities.LabStatus;
 import com.mnco.domain.entities.LabTemplate;
 import com.mnco.infrastructure.persistence.entity.LabTemplateJpaEntity;
 import java.time.Instant;
@@ -10,37 +11,47 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-19T01:27:46+0100",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 25.0.2 (Oracle Corporation)"
+    date = "2026-05-01T16:49:21+0100",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.2 (Amazon.com Inc.)"
 )
 @Component
 public class LabTemplateMapperImpl implements LabTemplateMapper {
 
     @Override
-    public LabTemplateResponse toResponse(LabTemplate template) {
+    public LabResponse toResponse(LabTemplate template) {
         if ( template == null ) {
             return null;
         }
 
+        UUID templateId = null;
+        String evengLabId = null;
         UUID id = null;
         String name = null;
         String description = null;
-        String version = null;
-        UUID authorId = null;
+        int cpuAllocated = 0;
+        int ramAllocated = 0;
+        int storageAllocated = 0;
         Instant createdAt = null;
 
+        templateId = template.getId();
+        evengLabId = template.getEveTemplatePath();
         id = template.getId();
         name = template.getName();
         description = template.getDescription();
-        version = template.getVersion();
-        authorId = template.getAuthorId();
+        cpuAllocated = template.getCpuAllocated();
+        ramAllocated = template.getRamAllocated();
+        storageAllocated = template.getStorageAllocated();
         createdAt = template.getCreatedAt();
 
-        boolean isPublic = false;
+        UUID ownerId = null;
+        LabStatus status = LabStatus.STOPPED;
+        Instant startedAt = null;
+        Instant stoppedAt = null;
+        Instant expiresAt = null;
 
-        LabTemplateResponse labTemplateResponse = new LabTemplateResponse( id, name, description, version, authorId, isPublic, createdAt );
+        LabResponse labResponse = new LabResponse( id, name, description, status, ownerId, templateId, evengLabId, cpuAllocated, ramAllocated, storageAllocated, startedAt, stoppedAt, expiresAt, createdAt );
 
-        return labTemplateResponse;
+        return labResponse;
     }
 
     @Override
@@ -49,19 +60,21 @@ public class LabTemplateMapperImpl implements LabTemplateMapper {
             return null;
         }
 
-        LabTemplate labTemplate = new LabTemplate();
+        LabTemplate.Builder labTemplate = LabTemplate.builder();
 
-        labTemplate.setId( entity.getId() );
-        labTemplate.setName( entity.getName() );
-        labTemplate.setDescription( entity.getDescription() );
-        labTemplate.setTopologyYaml( entity.getTopologyYaml() );
-        labTemplate.setVersion( entity.getVersion() );
-        labTemplate.setAuthorId( entity.getAuthorId() );
-        labTemplate.setPublic( entity.isPublic() );
-        labTemplate.setCreatedAt( entity.getCreatedAt() );
-        labTemplate.setUpdatedAt( entity.getUpdatedAt() );
+        labTemplate.id( entity.getId() );
+        labTemplate.name( entity.getName() );
+        labTemplate.description( entity.getDescription() );
+        labTemplate.eveTemplatePath( entity.getEveTemplatePath() );
+        labTemplate.status( entity.getStatus() );
+        labTemplate.cpuAllocated( entity.getCpuAllocated() );
+        labTemplate.ramAllocated( entity.getRamAllocated() );
+        labTemplate.storageAllocated( entity.getStorageAllocated() );
+        labTemplate.lastSyncedAt( entity.getLastSyncedAt() );
+        labTemplate.createdAt( entity.getCreatedAt() );
+        labTemplate.updatedAt( entity.getUpdatedAt() );
 
-        return labTemplate;
+        return labTemplate.build();
     }
 
     @Override
@@ -72,14 +85,17 @@ public class LabTemplateMapperImpl implements LabTemplateMapper {
 
         LabTemplateJpaEntity.LabTemplateJpaEntityBuilder labTemplateJpaEntity = LabTemplateJpaEntity.builder();
 
-        labTemplateJpaEntity.authorId( template.getAuthorId() );
-        labTemplateJpaEntity.createdAt( template.getCreatedAt() );
-        labTemplateJpaEntity.description( template.getDescription() );
         labTemplateJpaEntity.id( template.getId() );
         labTemplateJpaEntity.name( template.getName() );
-        labTemplateJpaEntity.topologyYaml( template.getTopologyYaml() );
+        labTemplateJpaEntity.description( template.getDescription() );
+        labTemplateJpaEntity.eveTemplatePath( template.getEveTemplatePath() );
+        labTemplateJpaEntity.status( template.getStatus() );
+        labTemplateJpaEntity.cpuAllocated( template.getCpuAllocated() );
+        labTemplateJpaEntity.ramAllocated( template.getRamAllocated() );
+        labTemplateJpaEntity.storageAllocated( template.getStorageAllocated() );
+        labTemplateJpaEntity.lastSyncedAt( template.getLastSyncedAt() );
+        labTemplateJpaEntity.createdAt( template.getCreatedAt() );
         labTemplateJpaEntity.updatedAt( template.getUpdatedAt() );
-        labTemplateJpaEntity.version( template.getVersion() );
 
         return labTemplateJpaEntity.build();
     }

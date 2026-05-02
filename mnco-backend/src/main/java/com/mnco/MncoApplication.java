@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * MNCO — Multi-Tenant Network & Cybersecurity Lab Orchestrator
- *
+
  * Architecture: Clean Architecture (Domain / Application / Infrastructure / Presentation)
  * Stack: Java 21 · Spring Boot 3.2 · PostgreSQL · JWT · EVE-NG API v2
- *
+ *sudo docker run -d --name mnco-postgres -e POSTGRES_DB=mnco_db -e POSTGRES_USER=mnco_user -e POSTGRES_PASSWORD=mnco_pass -p 5432:5432  postgres:15-alpine
  * @EnableAsync — required for AuditLogService async writes (FR-AA-07, FR-LM-10)
  */
 @SpringBootApplication
