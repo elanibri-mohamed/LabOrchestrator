@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { Package, MoreHorizontal, FlaskConical, Search, RefreshCw, UserPlus, X } from 'lucide-react';
+import DescriptionRenderer, { insertImageTokenAtCursor } from '../components/DescriptionRenderer';
 import './Templates.css';
 
 const Templates = () => {
@@ -21,6 +22,12 @@ const Templates = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState('');
+
+  // Description Modal State
+  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+  const [descriptionValue, setDescriptionValue] = useState('');
+  const [isSavingDescription, setIsSavingDescription] = useState(false);
+  const descriptionTextareaRef = useRef(null);
 
   const fetchTemplates = async () => {
     try {
@@ -65,6 +72,60 @@ const Templates = () => {
   const handleOpenAssign = (template) => {
     setSelectedTemplate(template);
     setShowAssignModal(true);
+  };
+
+  const handleOpenDescriptionEditor = (template) => {
+    setSelectedTemplate(template);
+    setDescriptionValue(template.description || '');
+    setShowDescriptionModal(true);
+  };
+
+  const handleDescriptionPaste = (event) => {
+    const clipboardFiles = Array.from(event.clipboardData?.files || []);
+    const pastedImage = clipboardFiles.find(file => file.type.startsWith('image/'));
+
+    if (!pastedImage || !descriptionTextareaRef.current) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const textarea = descriptionTextareaRef.current;
+      const currentValue = descriptionValue;
+      const selectionStart = textarea.selectionStart ?? currentValue.length;
+      const selectionEnd = textarea.selectionEnd ?? currentValue.length;
+      const { value: updatedValue, token } = insertImageTokenAtCursor(currentValue, selectionStart, selectionEnd, String(reader.result || ''), pastedImage.name || 'pasted image');
+      setDescriptionValue(updatedValue);
+
+      window.requestAnimationFrame(() => {
+        textarea.focus();
+        const cursorPosition = selectionStart + token.length;
+        textarea.setSelectionRange(cursorPosition, cursorPosition);
+      });
+    };
+    reader.readAsDataURL(pastedImage);
+  };
+
+  const handleSaveDescription = async () => {
+    if (!selectedTemplate) return;
+    setIsSavingDescription(true);
+    try {
+      const response = await api.patch(`/templates/${selectedTemplate.id}/description`, {
+        description: descriptionValue,
+      });
+      const updatedTemplate = response.data?.data || response.data;
+      setTemplates(prev => prev.map(template => (template.id === updatedTemplate.id ? updatedTemplate : template)));
+      setShowDescriptionModal(false);
+      setSelectedTemplate(null);
+      setDescriptionValue('');
+      alert('Lab description updated successfully');
+    } catch (error) {
+      alert('Description update failed: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsSavingDescription(false);
+    }
   };
 
   const handleAssign = async () => {
@@ -144,8 +205,17 @@ const Templates = () => {
                     <div className="template-body">
                       <div className="template-header">
                         <h3>{template.name}</h3>
+                        {(isAdmin || isTeacher) && (
+                          <button
+                            type="button"
+                            className="btn-edit-description"
+                            onClick={() => handleOpenDescriptionEditor(template)}
+                          >
+                            Edit Description
+                          </button>
+                        )}
                       </div>
-                      <p className="template-desc">{template.description}</p>
+                      <DescriptionRenderer text={template.description} className="template-desc template-desc-rendered" />
                       <div className="template-stats-mini">
                         <span>CPU: {template.cpuAllocated}</span>
                         <span>RAM: {template.ramAllocated}GB</span>
@@ -194,6 +264,39 @@ const Templates = () => {
               <button className="btn-secondary" onClick={() => setShowAssignModal(false)}>Cancel</button>
               <button className="btn-primary" onClick={handleAssign} disabled={!selectedUserId}>
                 Confirm Assignment
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDescriptionModal && (
+        <div className="modal-overlay" onClick={() => setShowDescriptionModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Edit Lab Description</h3>
+              <button className="close-btn" onClick={() => setShowDescriptionModal(false)}><X /></button>
+            </div>
+            <div className="modal-body">
+              <p>Update the lab description for <strong>{selectedTemplate?.name}</strong>.</p>
+              <div className="form-group">
+                <label>Lab Description</label>
+                <textarea
+                  ref={descriptionTextareaRef}
+                  value={descriptionValue}
+                  onChange={(e) => setDescriptionValue(e.target.value)}
+                  className="modal-textarea"
+                  rows="7"
+                  placeholder="Describe the topology, learning goals, and any important notes for students."
+                  onPaste={handleDescriptionPaste}
+                />
+                <p className="modal-hint">Tip: paste an image to embed it in the description.</p>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowDescriptionModal(false)}>Cancel</button>
+              <button className="btn-primary" onClick={handleSaveDescription} disabled={isSavingDescription}>
+                {isSavingDescription ? 'Saving...' : 'Save Description'}
               </button>
             </div>
           </div>

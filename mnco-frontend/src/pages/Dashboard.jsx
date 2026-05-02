@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import api from '../api/axios';
 import { Play, Square, MoreHorizontal, Monitor, ExternalLink, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
+import DescriptionRenderer from '../components/DescriptionRenderer';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -10,6 +11,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [labNodes, setLabNodes] = useState({});
   const [expandedLab, setExpandedLab] = useState(null);
+  const [openDescriptionLabId, setOpenDescriptionLabId] = useState(null);
   const [now, setNow] = useState(Date.now());
 
   const fetchLabs = async () => {
@@ -44,11 +46,22 @@ const Dashboard = () => {
     }
   };
 
+  const toggleDescription = (templateId) => {
+    setOpenDescriptionLabId(prev => (prev === templateId ? null : templateId));
+  };
+
   useEffect(() => {
     fetchLabs();
     const interval = setInterval(fetchLabs, 10000); // Poll every 10s
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (labs.length === 0) {
+      setOpenDescriptionLabId(null);
+      return;
+    }
+  }, [labs]);
 
   useEffect(() => {
     const timerInterval = setInterval(() => setNow(Date.now()), 1000);
@@ -128,7 +141,10 @@ const Dashboard = () => {
                 </div>
               ) : (
                 labs.map(lab => (
-                  <div key={lab.id} className="card lab-card fade-in">
+                  <div
+                    key={lab.id}
+                    className="card lab-card fade-in"
+                  >
                     <div className="lab-header">
                       <div className="lab-info">
                         <h3 className="lab-name">{lab.name}</h3>
@@ -136,9 +152,7 @@ const Dashboard = () => {
                       </div>
                       <MoreHorizontal className="lab-menu" />
                     </div>
-                    
-                    <p className="lab-description">{lab.description}</p>
-                    
+
                     <div className="lab-stats">
                       <div className="stat"><span>CPU</span> <strong>{lab.cpuAllocated}</strong></div>
                       <div className="stat"><span>RAM</span> <strong>{lab.ramAllocated}GB</strong></div>
@@ -146,18 +160,30 @@ const Dashboard = () => {
                       <div className="stat"><span>Timer</span> <strong className={getRemainingSeconds(lab) === 0 ? 'timer-expired' : ''}>{formatCountdown(getRemainingSeconds(lab))}</strong></div>
                     </div>
 
-                    <div className="lab-actions">
+                    <button
+                      type="button"
+                      className="read-desc-btn"
+                      onClick={() => toggleDescription(lab.templateId)}
+                    >
+                      {openDescriptionLabId === lab.templateId ? 'Close Description' : 'Read Description'}
+                    </button>
+
+                    {openDescriptionLabId === lab.templateId && (
+                      <DescriptionRenderer text={lab.description} className="lab-description lab-description-rendered" />
+                    )}
+
+                    <div className="lab-actions" onClick={(e) => e.stopPropagation()}>
                       {lab.status === 'RUNNING' ? (
                         <>
                           <button className="action-btn-main stop" onClick={() => handleStop(lab.templateId)}>
                             <Square size={18} fill="currentColor" /> Stop
                           </button>
                           <button className="action-btn-main secondary" onClick={() => toggleNodes(lab.templateId)}>
-                            {expandedLab === lab.templateId ? <ChevronUp size={18} /> : <ChevronDown size={18} />} 
+                            {expandedLab === lab.templateId ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                             {expandedLab === lab.templateId ? 'Hide Nodes' : 'View Nodes'}
                           </button>
                           <button className="action-btn-main outline" onClick={() => handleReset(lab.templateId)}>
-                              Reset Lab
+                            Reset Lab
                           </button>
                           <button className="action-btn-main secondary" onClick={() => handleResetTimer(lab.templateId)}>
                             <RotateCcw size={16} /> Reset Timer
@@ -176,7 +202,7 @@ const Dashboard = () => {
                     </div>
 
                     {expandedLab === lab.templateId && labNodes[lab.templateId] && (
-                      <div className="nodes-section fade-in">
+                      <div className="nodes-section fade-in" onClick={(e) => e.stopPropagation()}>
                         <h4 className="nodes-title"><Monitor size={16} /> Lab Nodes</h4>
                         <div className="nodes-list">
                           {Object.values(labNodes[lab.templateId]).map(node => (
@@ -188,10 +214,10 @@ const Dashboard = () => {
                                 </span>
                               </div>
                               {node.url && node.status === 2 && (
-                                <a 
-                                  href={node.url} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer" 
+                                <a
+                                  href={node.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
                                   className="console-link"
                                 >
                                   <ExternalLink size={14} /> Console

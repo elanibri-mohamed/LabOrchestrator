@@ -14,6 +14,8 @@ import com.mnco.exception.custom.DuplicateResourceException;
 import com.mnco.exception.custom.InvalidCredentialsException;
 import com.mnco.exception.custom.ResourceNotFoundException;
 import com.mnco.security.service.JwtService;
+import com.mnco.security.service.EveNgCredentialCipherService;
+import com.mnco.security.service.EveNgUsernameService;
 import com.mnco.infrastructure.external.eveng.EveNgService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,8 @@ public class AuthService implements AuthUseCase {
     private final UserMapper userMapper;
     private final AuditLogService auditLogService;
     private final EveNgService eveNgService;
+    private final EveNgCredentialCipherService eveNgCredentialCipherService;
+    private final EveNgUsernameService eveNgUsernameService;
 
     @Override
     @Transactional
@@ -61,6 +65,7 @@ public class AuthService implements AuthUseCase {
                 .username(request.username())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
+            .evengPasswordEncrypted(eveNgCredentialCipherService.encrypt(request.password()))
                 .role(userRole)
                 .enabled(true)
                 .build();
@@ -70,7 +75,8 @@ public class AuthService implements AuthUseCase {
 
         // Sync to EVE-NG
         try {
-            eveNgService.createUser(saved.getUsername(), request.password(), saved.getRole().name());
+            String eveNgUsername = eveNgUsernameService.toEveNgUsername(saved.getUsername());
+            eveNgService.createUser(eveNgUsername, request.password(), saved.getRole().name());
         } catch (Exception e) {
             log.warn("EVE-NG user sync failed during registration: {}", e.getMessage());
         }
@@ -81,7 +87,7 @@ public class AuthService implements AuthUseCase {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         log.info("Login attempt: identifier='{}'", request.usernameOrEmail());
         String ip = resolveClientIp();
@@ -105,12 +111,16 @@ public class AuthService implements AuthUseCase {
             throw new InvalidCredentialsException("Invalid credentials");
         }
 
+        user.setEvengPasswordEncrypted(eveNgCredentialCipherService.encrypt(request.password()));
+        user = userRepository.save(user);
+
         log.info("User authenticated: id={}, username='{}'", user.getId(), user.getUsername());
         auditLogService.logLogin(user.getId(), user.getUsername(), ip, ua);
 
         // Ensure user exists in EVE-NG (Lazy Sync)
         try {
-            eveNgService.createUser(user.getUsername(), request.password(), user.getRole().name());
+            String eveNgUsername = eveNgUsernameService.toEveNgUsername(user.getUsername());
+            eveNgService.createUser(eveNgUsername, request.password(), user.getRole().name());
         } catch (Exception e) {
             log.warn("EVE-NG user sync failed during login: {}", e.getMessage());
         }

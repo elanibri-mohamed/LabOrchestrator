@@ -24,9 +24,19 @@ public class EveNgSimulatedService implements EveNgService {
     }
 
     @Override
+    public void startLab(String evengLabId, String username, String password) {
+        startLab(evengLabId);
+    }
+
+    @Override
     public void stopLab(String evengLabId) {
         log.info("[SIM] Stopping lab '{}'", evengLabId);
         sleep(500);
+    }
+
+    @Override
+    public void stopLab(String evengLabId, String username, String password) {
+        stopLab(evengLabId);
     }
 
     @Override
@@ -36,14 +46,29 @@ public class EveNgSimulatedService implements EveNgService {
     }
 
     @Override
+    public void deleteLab(String evengLabId, String username, String password) {
+        deleteLab(evengLabId);
+    }
+
+    @Override
     public void copyLab(String sourcePath, String targetPath) {
         log.info("[SIM] Copying lab '{}' -> '{}'", sourcePath, targetPath);
         sleep(800);
     }
 
     @Override
+    public void copyLab(String sourcePath, String targetPath, String username, String password) {
+        copyLab(sourcePath, targetPath);
+    }
+
+    @Override
     public void createFolder(String path) {
         log.info("[SIM] Creating folder: {}", path);
+    }
+
+    @Override
+    public void createFolder(String path, String username, String password) {
+        createFolder(path);
     }
 
     @Override
@@ -60,11 +85,21 @@ public class EveNgSimulatedService implements EveNgService {
     }
 
     @Override
+    public List<EveNgNodeStatus> getLabNodeStatuses(String evengLabId, String username, String password) {
+        return getLabNodeStatuses(evengLabId);
+    }
+
+    @Override
     public EveNgNodeConsoleInfo getNodeConsoleInfo(String evengLabId, String nodeId) {
         return new EveNgNodeConsoleInfo(
                 "TELNET", "127.0.0.1", 32768, "ws://127.0.0.1/console",
                 nodeId, "Node-" + nodeId, "RUNNING"
         );
+    }
+
+    @Override
+    public EveNgNodeConsoleInfo getNodeConsoleInfo(String evengLabId, String nodeId, String username, String password) {
+        return getNodeConsoleInfo(evengLabId, nodeId);
     }
 
     @Override
@@ -75,12 +110,22 @@ public class EveNgSimulatedService implements EveNgService {
         );
     }
 
+    @Override
+    public List<EveNgLabInfo> getAllLabs(String username, String password) {
+        return getAllLabs();
+    }
+
 
     @Override
     public List<EveNgNodeInfo> getLabNodes(String evengLabId) {
         return List.of(
                 new EveNgNodeInfo("1", "Router-1", "iol", 2, 2, 2048, 512, 0, "img", "telnet")
         );
+    }
+
+    @Override
+    public List<EveNgNodeInfo> getLabNodes(String evengLabId, String username, String password) {
+        return getLabNodes(evengLabId);
     }
 
     @Override
@@ -93,6 +138,11 @@ public class EveNgSimulatedService implements EveNgService {
         node1.put("url", "http://127.0.0.1/html5/#/client/SIM1");
         nodes.put("1", node1);
         return nodes;
+    }
+
+    @Override
+    public java.util.Map<String, Object> getRawLabNodes(String evengLabId, String username, String password) {
+        return getRawLabNodes(evengLabId);
     }
 
     private void sleep(long ms) {

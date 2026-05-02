@@ -14,6 +14,7 @@ public class User {
     private String username;
     private String email;
     private String password;
+    private String evengPasswordEncrypted;
     private UserRole role;
     private boolean enabled;
     private Instant createdAt;
@@ -28,6 +29,7 @@ public class User {
         this.username = builder.username;
         this.email = builder.email;
         this.password = builder.password;
+        this.evengPasswordEncrypted = builder.evengPasswordEncrypted;
         this.role = builder.role;
         this.enabled = builder.enabled;
         this.createdAt = builder.createdAt;
@@ -62,6 +64,9 @@ public class User {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
+    public String getEvengPasswordEncrypted() { return evengPasswordEncrypted; }
+    public void setEvengPasswordEncrypted(String evengPasswordEncrypted) { this.evengPasswordEncrypted = evengPasswordEncrypted; }
+
     public UserRole getRole() { return role; }
     public void setRole(UserRole role) { this.role = role; }
 
@@ -85,6 +90,7 @@ public class User {
         private String username;
         private String email;
         private String password;
+        private String evengPasswordEncrypted;
         private UserRole role = UserRole.STUDENT;
         private boolean enabled = true;
         private Instant createdAt = Instant.now();
@@ -94,6 +100,7 @@ public class User {
         public Builder username(String username) { this.username = username; return this; }
         public Builder email(String email) { this.email = email; return this; }
         public Builder password(String password) { this.password = password; return this; }
+        public Builder evengPasswordEncrypted(String evengPasswordEncrypted) { this.evengPasswordEncrypted = evengPasswordEncrypted; return this; }
         public Builder role(UserRole role) { this.role = role; return this; }
         public Builder enabled(boolean enabled) { this.enabled = enabled; return this; }
         public Builder createdAt(Instant createdAt) { this.createdAt = createdAt; return this; }

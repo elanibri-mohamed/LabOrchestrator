@@ -39,6 +39,9 @@ public class UserJpaEntity {
     @Column(nullable = false, length = 255)
     private String password;
 
+    @Column(name = "eveng_password_encrypted", length = 512)
+    private String evengPasswordEncrypted;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private UserRole role;

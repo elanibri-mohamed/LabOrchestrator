@@ -9,7 +9,7 @@ public record CreateLabTemplateRequest(
         @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
         String name,
 
-        @Size(max = 1000, message = "Description cannot exceed 1000 characters")
+        @Size(max = 100000, message = "Description cannot exceed 100000 characters")
         String description,
 
         String topologyYaml,

@@ -89,6 +89,18 @@
 
 .lab-card {
   padding: 16px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lab-card:hover {
+  border-color: var(--fb-divider);
+}
+
+.lab-card.selected {
+  border-color: var(--fb-blue);
+  box-shadow: 0 0 0 1px rgba(24, 119, 242, 0.08);
 }
 
 .lab-header {
@@ -113,7 +125,31 @@
 }
 
 .lab-description {
+  margin-top: 8px;
   margin-bottom: 16px;
+}
+
+.read-desc-btn {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1877f2, #1456b8);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(24, 119, 242, 0.22);
+}
+
+.read-desc-btn:hover {
+  filter: brightness(1.05);
+}
+
+.read-desc-btn:active {
+  transform: translateY(1px);
 }
 
 .lab-stats {

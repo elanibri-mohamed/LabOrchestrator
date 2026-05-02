@@ -58,6 +58,7 @@ eveng:
   base-url: ${EVENG_BASE_URL:http://10.10.30.10}
   username: ${EVENG_USERNAME:admin}
   password: ${EVENG_PASSWORD:eve}
+  credentials-secret: ${EVENG_CREDENTIALS_SECRET:${JWT_SECRET:3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b}}
   clone:
     strict-mode: ${EVENG_CLONE_STRICT_MODE:false}
   api-path: /api

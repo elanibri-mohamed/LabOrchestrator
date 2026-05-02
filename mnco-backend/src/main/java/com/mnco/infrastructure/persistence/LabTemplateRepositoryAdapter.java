@@ -48,6 +48,11 @@ public class LabTemplateRepositoryAdapter implements LabTemplateRepository {
     }
 
     @Override
+    public Optional<LabTemplate> findByName(String name) {
+        return jpaRepository.findByName(name).map(mapper::toDomain);
+    }
+
+    @Override
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }

@@ -1,10 +1,12 @@
 package com.mnco.presentation.controller;
 
+import com.mnco.application.dto.request.UpdateLabDescriptionRequest;
 import com.mnco.application.dto.response.ApiResponse;
 import com.mnco.application.dto.response.LabResponse;
 import com.mnco.application.usecases.LabTemplateUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +31,16 @@ public class LabTemplateController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<LabResponse>> getTemplate(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(templateUseCase.getTemplateById(id)));
+    }
+
+    @PatchMapping("/{id}/description")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public ResponseEntity<ApiResponse<LabResponse>> updateTemplateDescription(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateLabDescriptionRequest request) {
+        log.info("Updating template description for template={}", id);
+        LabResponse updated = templateUseCase.updateTemplateDescription(id, request.description());
+        return ResponseEntity.ok(ApiResponse.success("Template description updated", updated));
     }
 
     @PostMapping("/sync")

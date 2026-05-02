@@ -79,21 +79,48 @@ public class LabTemplateService implements LabTemplateUseCase {
 
     @Override
     @Transactional
+    public LabResponse updateTemplateDescription(UUID id, String description) {
+        User currentUser = getCurrentUser();
+        LabTemplate template = templateRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Template not found: " + id));
+
+        if (!currentUser.isAdmin() && !assignmentRepository.existsByTemplateIdAndUserId(id, currentUser.getId())) {
+            throw new UnauthorizedException("You are not assigned to this lab template");
+        }
+
+        String normalizedDescription = description == null ? null : description.trim();
+        if (normalizedDescription != null && normalizedDescription.isEmpty()) {
+            normalizedDescription = null;
+        }
+
+        template.setDescription(normalizedDescription);
+        template.setLastSyncedAt(template.getLastSyncedAt());
+        LabTemplate saved = templateRepository.save(template);
+        return templateMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional
     public List<LabResponse> discoverTemplatesFromEveNg() {
         log.info("Starting template discovery from EVE-NG /templates directory");
         List<LabResponse> syncedTemplates = new ArrayList<>();
 
         try {
             // In our multi-tenant plan, templates are in /opt/unetlab/labs/templates/
-            // Note: EveNgService needs to be aware of this prefix or we handle it here.
+            // Instances (deployed labs) are in /instances/ and should NOT be synced as templates
             List<EveNgLabInfo> eveNgLabs = eveNgService.getAllLabs();
             
-            // For now, we assume all labs discovered are potential templates
-            // In a real EVE-NG setup, we might filter by path starting with "/templates"
-            
+            // Filter to only include labs that are NOT in /instances/ directory
+            // /instances/ contains deployed lab copies, not template definitions
             List<String> activePaths = new ArrayList<>();
 
             for (EveNgLabInfo eveNgLab : eveNgLabs) {
+                // Skip labs in /instances/ folder (these are lab instances, not templates)
+                if (eveNgLab.path().startsWith("/instances/")) {
+                    log.debug("Skipping lab instance (not a template): {}", eveNgLab.path());
+                    continue;
+                }
+                
                 activePaths.add(eveNgLab.path());
                 Optional<LabTemplate> existing = templateRepository.findByEveTemplatePath(eveNgLab.path());
 
@@ -104,8 +131,22 @@ public class LabTemplateService implements LabTemplateUseCase {
                     int ram = nodes.stream().mapToInt(EveNgNodeInfo::getRamGb).sum();
                     int storage = nodes.stream().mapToInt(EveNgNodeInfo::getDiskGb).sum();
 
+                    // Handle duplicate template names: if a template with the same name already exists
+                    // but with a different path, append the lab instance ID to make the name unique
+                    String templateName = eveNgLab.getDisplayName();
+                    String uniqueName = templateName;
+                    int counter = 1;
+                    while (templateRepository.findByName(uniqueName).isPresent()) {
+                        // Extract instance UUID from path if available (e.g., /instances/{uuid}/lab.unl)
+                        String pathPart = eveNgLab.path().contains("/instances/") 
+                            ? eveNgLab.path().substring(0, Math.min(eveNgLab.path().length(), eveNgLab.path().lastIndexOf("/")))
+                            : "";
+                        uniqueName = templateName + (counter > 1 ? " (" + counter + ")" : " (instance)");
+                        counter++;
+                    }
+
                     LabTemplate template = LabTemplate.builder()
-                            .name(eveNgLab.getDisplayName())
+                            .name(uniqueName)
                             .description(eveNgLab.description() != null ? eveNgLab.description() : "Synced from EVE-NG")
                             .eveTemplatePath(eveNgLab.path())
                             .status(LabTemplateStatus.ACTIVE)

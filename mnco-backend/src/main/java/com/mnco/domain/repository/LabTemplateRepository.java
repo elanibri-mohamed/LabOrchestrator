@@ -22,5 +22,7 @@ public interface LabTemplateRepository {
 
     Optional<LabTemplate> findByEveTemplatePath(String path);
 
+    Optional<LabTemplate> findByName(String name);
+
     void deleteById(UUID id);
 }

@@ -18,5 +18,6 @@ jwt:
   expiration-ms: 3600000
 
 eveng:
+  credentials-secret: test-credentials-secret-that-is-at-least-256-bits-long
   clone:
     strict-mode: false

@@ -14,5 +14,7 @@ public interface LabTemplateJpaRepository extends JpaRepository<LabTemplateJpaEn
 
     Optional<LabTemplateJpaEntity> findByEveTemplatePath(String path);
 
+    Optional<LabTemplateJpaEntity> findByName(String name);
+
     List<LabTemplateJpaEntity> findAllByStatus(LabTemplateStatus status);
 }

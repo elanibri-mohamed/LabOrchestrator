@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.zip.CRC32;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,6 +57,10 @@ public class EveNgRestService implements EveNgService {
     }
 
     private String authenticate() {
+        return authenticate(username, password);
+    }
+
+    private String authenticate(String username, String password) {
         try {
             var response = webClient.post()
                     .uri("/api/auth/login")
@@ -80,8 +85,13 @@ public class EveNgRestService implements EveNgService {
 
     @Override
     public void startLab(String evengLabId) {
+        startLab(evengLabId, username, password);
+    }
+
+    @Override
+    public void startLab(String evengLabId, String username, String password) {
         log.info("Starting nodes in lab '{}'", evengLabId);
-        String cookie = authenticate();
+        String cookie = authenticate(username, password);
         try {
             String uri = "/api/labs/" + evengLabId.replaceFirst("^/", "") + "/nodes/start";
             webClient.get().uri(uri).header("Cookie", cookie).retrieve().bodyToMono(String.class).block();
@@ -92,8 +102,13 @@ public class EveNgRestService implements EveNgService {
 
     @Override
     public void stopLab(String evengLabId) {
+        stopLab(evengLabId, username, password);
+    }
+
+    @Override
+    public void stopLab(String evengLabId, String username, String password) {
         log.info("Stopping nodes in lab '{}'", evengLabId);
-        String cookie = authenticate();
+        String cookie = authenticate(username, password);
         try {
             String uri = "/api/labs/" + evengLabId.replaceFirst("^/", "") + "/nodes/stop";
             webClient.get().uri(uri).header("Cookie", cookie).retrieve().bodyToMono(String.class).block();
@@ -104,39 +119,71 @@ public class EveNgRestService implements EveNgService {
 
     @Override
     public void createUser(String username, String password, String role) {
-        log.info("Creating user '{}' in EVE-NG with role '{}'", username, role);
+        log.info("Creating user '{}' in EVE-NG", username);
         String cookie = authenticate();
         try {
-            // EVE-NG roles: admin, user
-            String evengRole = "admin".equalsIgnoreCase(role) ? "admin" : "user";
-            
-            webClient.post()
+            int pod = computePod(username);
+            // EVE-NG Community Edition only supports admin role.
+            Map<String, Object> payload = Map.of(
+                    "username", username,
+                    "password", password,
+                    "role", "admin",
+                    "expiration", -1,
+                    "can_spawn", 1,
+                "html5", 1,
+                "pod", pod
+            );
+
+            JsonNode updateResponse = webClient.put()
+                    .uri(uriBuilder -> uriBuilder.path("/api/users/{u}").build(username))
+                    .header("Cookie", cookie)
+                    .bodyValue(payload)
+                    .retrieve()
+                    .bodyToMono(JsonNode.class)
+                    .timeout(Duration.ofSeconds(10))
+                    .block();
+
+            if (updateResponse != null && updateResponse.path("code").asInt() == 200) {
+                return;
+            }
+
+            JsonNode createResponse = webClient.post()
                     .uri("/api/users")
                     .header("Cookie", cookie)
-                    .bodyValue(Map.of(
-                            "username", username,
-                            "password", password,
-                            "role", evengRole,
-                            "expiration", -1,
-                            "can_spawn", 1,
-                            "html5", 1
-                    ))
+                    .bodyValue(payload)
                     .retrieve()
-                    .toBodilessEntity()
-                    .onErrorResume(e -> {
-                        log.debug("User {} might already exist in EVE-NG: {}", username, e.getMessage());
-                        return reactor.core.publisher.Mono.empty();
-                    })
+                    .bodyToMono(JsonNode.class)
+                    .timeout(Duration.ofSeconds(10))
                     .block();
+
+            int code = createResponse == null ? 0 : createResponse.path("code").asInt();
+            if (code != 201 && code != 200) {
+                String message = createResponse == null ? "empty response" : createResponse.path("message").asText("unknown");
+                throw new EveNgIntegrationException("Failed to sync EVE-NG user '" + username + "': code=" + code + ", message=" + message);
+            }
         } catch (Exception ex) {
-            log.warn("Failed to create user in EVE-NG: {}", ex.getMessage());
+            log.warn("Failed to create/update user '{}' in EVE-NG: {}", username, ex.getMessage());
         }
+    }
+
+    private int computePod(String username) {
+        CRC32 crc = new CRC32();
+        crc.update(username.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        long hash = crc.getValue();
+        int minPod = 1024;
+        int range = 60000;
+        return minPod + (int) (hash % range);
     }
 
     @Override
     public void deleteLab(String evengLabId) {
+        deleteLab(evengLabId, username, password);
+    }
+
+    @Override
+    public void deleteLab(String evengLabId, String username, String password) {
         log.info("Deleting lab '{}'", evengLabId);
-        String cookie = authenticate();
+        String cookie = authenticate(username, password);
         try {
             webClient.delete().uri("/api/labs" + evengLabId).header("Cookie", cookie).retrieve().toBodilessEntity().block();
         } catch (Exception ex) {
@@ -146,8 +193,13 @@ public class EveNgRestService implements EveNgService {
 
     @Override
     public void copyLab(String sourcePath, String targetPath) {
+        copyLab(sourcePath, targetPath, username, password);
+    }
+
+    @Override
+    public void copyLab(String sourcePath, String targetPath, String username, String password) {
         log.info("Copying EVE-NG lab '{}' → '{}'", sourcePath, targetPath);
-        String cookie = authenticate();
+        String cookie = authenticate(username, password);
 
         try {
             boolean cloneCompleted = false;
@@ -969,7 +1021,12 @@ public class EveNgRestService implements EveNgService {
 
     @Override
     public void createFolder(String path) {
-        createFolderInternal(path, authenticate());
+        createFolder(path, username, password);
+    }
+
+    @Override
+    public void createFolder(String path, String username, String password) {
+        createFolderInternal(path, authenticate(username, password));
     }
 
     private void createFolderInternal(String path, String cookie) {
@@ -1004,7 +1061,12 @@ public class EveNgRestService implements EveNgService {
 
     @Override
     public List<EveNgNodeStatus> getLabNodeStatuses(String evengLabId) {
-        String cookie = authenticate();
+        return getLabNodeStatuses(evengLabId, username, password);
+    }
+
+    @Override
+    public List<EveNgNodeStatus> getLabNodeStatuses(String evengLabId, String username, String password) {
+        String cookie = authenticate(username, password);
         try {
             JsonNode response = webClient.get().uri("/api/labs" + evengLabId + "/nodes").header("Cookie", cookie).retrieve().bodyToMono(JsonNode.class).block();
             if (response == null || !response.has("data")) return Collections.emptyList();
@@ -1021,7 +1083,12 @@ public class EveNgRestService implements EveNgService {
 
     @Override
     public EveNgNodeConsoleInfo getNodeConsoleInfo(String evengLabId, String nodeId) {
-        String cookie = authenticate();
+        return getNodeConsoleInfo(evengLabId, nodeId, username, password);
+    }
+
+    @Override
+    public EveNgNodeConsoleInfo getNodeConsoleInfo(String evengLabId, String nodeId, String username, String password) {
+        String cookie = authenticate(username, password);
         try {
             JsonNode response = webClient.get().uri("/api/labs" + evengLabId + "/nodes/" + nodeId).header("Cookie", cookie).retrieve().bodyToMono(JsonNode.class).block();
             JsonNode data = response.get("data");
@@ -1033,7 +1100,12 @@ public class EveNgRestService implements EveNgService {
 
     @Override
     public List<EveNgLabInfo> getAllLabs() {
-        String cookie = authenticate();
+        return getAllLabs(username, password);
+    }
+
+    @Override
+    public List<EveNgLabInfo> getAllLabs(String username, String password) {
+        String cookie = authenticate(username, password);
         List<EveNgLabInfo> allLabs = new ArrayList<>();
         traverseFolders("/", cookie, allLabs);
         return allLabs;
@@ -1047,7 +1119,7 @@ public class EveNgRestService implements EveNgService {
             JsonNode data = response.get("data");
             if (data.has("labs") && data.get("labs").isArray()) {
                 for (JsonNode labEntry : data.get("labs")) {
-                    getLabByPath(labEntry.path("path").asText()).ifPresent(allLabs::add);
+                    getLabByPath(labEntry.path("path").asText(), cookie).ifPresent(allLabs::add);
                 }
             }
             if (data.has("folders") && data.get("folders").isArray()) {
@@ -1058,8 +1130,7 @@ public class EveNgRestService implements EveNgService {
         } catch (Exception ignored) {}
     }
 
-    private Optional<EveNgLabInfo> getLabByPath(String path) {
-        String cookie = authenticate();
+    private Optional<EveNgLabInfo> getLabByPath(String path, String cookie) {
         try {
             JsonNode response = webClient.get().uri("/api/labs" + path).header("Cookie", cookie).retrieve().bodyToMono(JsonNode.class).block();
             if (response == null || !response.has("data")) return Optional.empty();
@@ -1070,7 +1141,12 @@ public class EveNgRestService implements EveNgService {
 
     @Override
     public List<EveNgNodeInfo> getLabNodes(String evengLabId) {
-        String cookie = authenticate();
+        return getLabNodes(evengLabId, username, password);
+    }
+
+    @Override
+    public List<EveNgNodeInfo> getLabNodes(String evengLabId, String username, String password) {
+        String cookie = authenticate(username, password);
         try {
             JsonNode response = webClient.get().uri("/api/labs" + evengLabId + "/nodes").header("Cookie", cookie).retrieve().bodyToMono(JsonNode.class).block();
             List<EveNgNodeInfo> nodes = new ArrayList<>();
@@ -1084,7 +1160,12 @@ public class EveNgRestService implements EveNgService {
 
     @Override
     public Map<String, Object> getRawLabNodes(String evengLabId) {
-        String cookie = authenticate();
+        return getRawLabNodes(evengLabId, username, password);
+    }
+
+    @Override
+    public Map<String, Object> getRawLabNodes(String evengLabId, String username, String password) {
+        String cookie = authenticate(username, password);
         try {
             Map<String, Object> raw = webClient.get().uri("/api/labs" + evengLabId + "/nodes").header("Cookie", cookie).retrieve().bodyToMono(Map.class).block();
             Map<String, Object> nodes = (Map<String, Object>) raw.get("data");
